@@ -5,12 +5,11 @@ import adv.entities.Game;
 import adv.entities.State;
 
 import java.util.List;
-import java.util.Random;
 
-public class RandomMove implements Algorithm {
+public class Random implements Algorithm {
     private final Game<State, Action> game;
 
-    public RandomMove(Game<State, Action> game) {
+    public Random(Game<State, Action> game) {
         this.game = game;
     }
 
@@ -22,7 +21,7 @@ public class RandomMove implements Algorithm {
     @Override
     public Action nextMove(State s) {
         List<Action> actions = game.actions(s);
-        int elem = new Random().nextInt(actions.size());
+        int elem = new java.util.Random().nextInt(actions.size());
 
         return actions.get(elem);
     }

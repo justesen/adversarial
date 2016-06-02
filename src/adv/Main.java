@@ -2,7 +2,7 @@ package adv;
 
 import adv.algorithms.Algorithm;
 import adv.algorithms.MiniMax;
-import adv.algorithms.RandomMove;
+import adv.algorithms.Random;
 import adv.entities.Action;
 import adv.entities.Game;
 import adv.entities.State;
@@ -14,7 +14,7 @@ public class Main {
         Game<? extends State, ? extends Action> game = new TicTacToe();
         State s = new TTTState();
         Algorithm mm = new MiniMax((Game<State, Action>) game);
-        Algorithm rnd = new RandomMove((Game<State, Action>) game);
+        Algorithm rnd = new Random((Game<State, Action>) game);
 
         playMatch((Game<State, Action>) game, s, rnd, mm);
     }
