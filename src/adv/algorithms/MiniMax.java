@@ -4,18 +4,8 @@ import adv.entities.Action;
 import adv.entities.Game;
 import adv.entities.State;
 
-public class MiniMax implements adv.algorithms.Algorithm {
-    private class Comparison<V, A> {
-        final V val;
-        final A arg;
-
-        Comparison(V val, A arg) {
-            this.val = val;
-            this.arg = arg;
-        }
-    }
-
-    Game<State, Action> game;
+public class MiniMax implements Algorithm {
+    private final Game<State, Action> game;
 
     public MiniMax(Game<State, Action> game) {
         this.game = game;
@@ -87,5 +77,15 @@ public class MiniMax implements adv.algorithms.Algorithm {
         }
 
         return new Comparison<>(min, argmin);
+    }
+
+    private class Comparison<V, A> {
+        final V val;
+        final A arg;
+
+        Comparison(V val, A arg) {
+            this.val = val;
+            this.arg = arg;
+        }
     }
 }

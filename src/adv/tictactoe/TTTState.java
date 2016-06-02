@@ -8,10 +8,9 @@ import java.util.LinkedList;
 
 public class TTTState implements State {
 
-    private Value[][] board;
-    private Player player;
-
     private static final int SIZE = 3;
+    private final Value[][] board;
+    private final Player player;
 
     public TTTState() {
         player = Player.MAX;
@@ -24,14 +23,12 @@ public class TTTState implements State {
         }
     }
 
-    public TTTState(TTTState s, adv.tictactoe.TTTAction a) {
+    public TTTState(TTTState s, TTTAction a) {
         player = (s.player == Player.MAX ? Player.MIN : Player.MAX);
         board = new Value[SIZE][SIZE];
 
         for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
-                board[i][j] = s.board[i][j];
-            }
+            System.arraycopy(s.board[i], 0, board[i], 0, SIZE);
         }
 
         board[a.cell.row][a.cell.col] = (a.player == Player.MAX ? Value.X : Value.O);
@@ -41,8 +38,8 @@ public class TTTState implements State {
         return player;
     }
 
-    public Collection<adv.tictactoe.Cell> cells() {
-        Collection<adv.tictactoe.Cell> cells = new LinkedList<>();
+    public Collection<Cell> cells() {
+        Collection<Cell> cells = new LinkedList<>();
 
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
@@ -66,18 +63,18 @@ public class TTTState implements State {
 
     public boolean isWinning() {
         return  // Check rows
-                   winning(board[0][0], board[0][1], board[0][2])
-                || winning(board[1][0], board[1][1], board[1][2])
-                || winning(board[2][0], board[2][1], board[2][2])
+                winning(board[0][0], board[0][1], board[0][2])
+                        || winning(board[1][0], board[1][1], board[1][2])
+                        || winning(board[2][0], board[2][1], board[2][2])
 
-                // Check columns
-                || winning(board[0][0], board[1][0], board[2][0])
-                || winning(board[0][1], board[1][1], board[2][1])
-                || winning(board[0][2], board[1][2], board[2][2])
+                        // Check columns
+                        || winning(board[0][0], board[1][0], board[2][0])
+                        || winning(board[0][1], board[1][1], board[2][1])
+                        || winning(board[0][2], board[1][2], board[2][2])
 
-                // Check diagonals
-                || winning(board[0][0], board[1][1], board[2][2])
-                || winning(board[2][0], board[1][1], board[0][2]);
+                        // Check diagonals
+                        || winning(board[0][0], board[1][1], board[2][2])
+                        || winning(board[2][0], board[1][1], board[0][2]);
     }
 
     private boolean winning(Value v1, Value v2, Value v3) {

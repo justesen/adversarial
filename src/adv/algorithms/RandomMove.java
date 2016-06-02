@@ -7,12 +7,12 @@ import adv.entities.State;
 import java.util.List;
 import java.util.Random;
 
-public class RandomMove implements adv.algorithms.Algorithm {
+public class RandomMove implements Algorithm {
 
-    Game<State, Action> game;
+    private final Game<State, Action> game;
 
-    public RandomMove(Game<? extends State, ? extends Action> game) {
-        this.game = (Game<State, Action>) game;
+    public RandomMove(Game<State, Action> game) {
+        this.game = game;
     }
 
     @Override

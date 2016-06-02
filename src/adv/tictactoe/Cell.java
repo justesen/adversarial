@@ -4,7 +4,7 @@ public class Cell {
 
     public final int row;
     public final int col;
-    public final Value val;
+    private final Value val;
 
     public Cell(int row, int col, Value val) {
         this.row = row;

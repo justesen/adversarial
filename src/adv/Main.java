@@ -16,7 +16,7 @@ public class Main {
         Game<? extends State, ? extends Action> g = new TicTacToe();
         TTTState s = new TTTState();
         Algorithm mm = new MiniMax((Game<State, Action>) g);
-        Algorithm rnd = new RandomMove(g);
+        Algorithm rnd = new RandomMove((Game<State, Action>) g);
 
         playMatch((Game<State, Action>) g, s, mm, rnd);
     }
