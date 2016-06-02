@@ -1,13 +1,13 @@
-package algorithms;
+package adv.algorithms;
 
-import entities.Action;
-import entities.Game;
-import entities.State;
+import adv.entities.Action;
+import adv.entities.Game;
+import adv.entities.State;
 
 import java.util.List;
 import java.util.Random;
 
-public class RandomMove implements Algorithm {
+public class RandomMove implements adv.algorithms.Algorithm {
 
     Game<State, Action> game;
 

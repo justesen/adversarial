@@ -1,8 +1,8 @@
-package entities;
+package adv.entities;
 
 import java.util.List;
 
-public interface Game<S extends State, A extends Action> {
+public interface Game<S extends State, A extends adv.entities.Action> {
 
     List<A> actions(S s);
 

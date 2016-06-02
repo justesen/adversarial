@@ -1,12 +1,14 @@
-import algorithms.Algorithm;
-import algorithms.MiniMax;
-import algorithms.RandomMove;
-import entities.Action;
-import entities.Game;
-import entities.State;
-import tictactoe.TTTAction;
-import tictactoe.TTTState;
-import tictactoe.TicTacToe;
+package adv;
+
+import adv.algorithms.Algorithm;
+import adv.algorithms.MiniMax;
+import adv.algorithms.RandomMove;
+import adv.entities.Action;
+import adv.entities.Game;
+import adv.entities.State;
+import adv.tictactoe.TTTAction;
+import adv.tictactoe.TTTState;
+import adv.tictactoe.TicTacToe;
 
 public class Main {
 

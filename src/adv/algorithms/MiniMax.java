@@ -1,10 +1,10 @@
-package algorithms;
+package adv.algorithms;
 
-import entities.Action;
-import entities.Game;
-import entities.State;
+import adv.entities.Action;
+import adv.entities.Game;
+import adv.entities.State;
 
-public class MiniMax implements Algorithm {
+public class MiniMax implements adv.algorithms.Algorithm {
     private class Comparison<V, A> {
         final V val;
         final A arg;

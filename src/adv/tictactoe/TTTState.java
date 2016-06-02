@@ -1,7 +1,7 @@
-package tictactoe;
+package adv.tictactoe;
 
-import entities.Player;
-import entities.State;
+import adv.entities.Player;
+import adv.entities.State;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -24,7 +24,7 @@ public class TTTState implements State {
         }
     }
 
-    public TTTState(TTTState s, TTTAction a) {
+    public TTTState(TTTState s, adv.tictactoe.TTTAction a) {
         player = (s.player == Player.MAX ? Player.MIN : Player.MAX);
         board = new Value[SIZE][SIZE];
 
@@ -41,12 +41,12 @@ public class TTTState implements State {
         return player;
     }
 
-    public Collection<Cell> cells() {
-        Collection<Cell> cells = new LinkedList<>();
+    public Collection<adv.tictactoe.Cell> cells() {
+        Collection<adv.tictactoe.Cell> cells = new LinkedList<>();
 
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
-                cells.add(new Cell(i, j, board[i][j]));
+                cells.add(new adv.tictactoe.Cell(i, j, board[i][j]));
             }
         }
 

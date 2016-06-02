@@ -1,7 +1,7 @@
-package algorithms;
+package adv.algorithms;
 
-import entities.Action;
-import entities.State;
+import adv.entities.Action;
+import adv.entities.State;
 
 public interface Algorithm {
 

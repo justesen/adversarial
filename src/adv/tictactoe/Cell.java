@@ -1,4 +1,4 @@
-package tictactoe;
+package adv.tictactoe;
 
 public class Cell {
 
