@@ -88,7 +88,6 @@ public class MiniMax implements Algorithm {
     }
 
     private class Comparison {
-
         final int val;
         final Action arg;
 

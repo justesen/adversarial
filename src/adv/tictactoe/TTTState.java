@@ -22,7 +22,7 @@ public class TTTState implements State {
         }
     }
 
-    public TTTState(TTTState s, TTTAction a) {
+    TTTState(TTTState s, TTTAction a) {
         player = (s.player == Player.MAX ? Player.MIN : Player.MAX);
         board = new Value[SIZE][SIZE];
 
@@ -33,11 +33,11 @@ public class TTTState implements State {
         board[a.row][a.col] = (a.player == Player.MAX ? Value.X : Value.O);
     }
 
-    public Player currentPlayer() {
+    Player currentPlayer() {
         return player;
     }
 
-    public Collection<Cell> cells() {
+    Collection<Cell> cells() {
         Collection<Cell> cells = new LinkedList<>();
 
         for (int i = 0; i < SIZE; i++) {
@@ -48,7 +48,7 @@ public class TTTState implements State {
         return cells;
     }
 
-    public boolean isBoardFull() {
+    boolean isBoardFull() {
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 if (board[i][j] == Value.EMPTY) {
@@ -59,11 +59,11 @@ public class TTTState implements State {
         return true;
     }
 
-    public boolean isWinning() {
-        return  // Check rows
+    boolean isWinning() {
+        return // Check rows
                 winning(board[0][0], board[0][1], board[0][2])
-                        || winning(board[1][0], board[1][1], board[1][2])
                         || winning(board[2][0], board[2][1], board[2][2])
+                        || winning(board[1][0], board[1][1], board[1][2])
 
                         // Check columns
                         || winning(board[0][0], board[1][0], board[2][0])
@@ -81,23 +81,22 @@ public class TTTState implements State {
 
     @Override
     public String toString() {
-        String s = "#####\n";
+        String s = "  a b c\n";
 
         for (int i = 0; i < SIZE; i++) {
-            s = s + "#";
+            s = s + (i + 1) + " ";
 
             for (int j = 0; j < SIZE; j++) {
                 if (board[i][j] == Value.X) {
-                    s = s + "X";
+                    s = s + "X ";
                 } else if (board[i][j] == Value.O) {
-                    s = s + "O";
+                    s = s + "O ";
                 } else {
-                    s = s + " ";
+                    s = s + "  ";
                 }
             }
-            s = s + "#\n";
+            s = s + "\n";
         }
-        s = s + "#####";
 
         return s;
     }
