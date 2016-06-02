@@ -11,14 +11,13 @@ import adv.tictactoe.TTTState;
 import adv.tictactoe.TicTacToe;
 
 public class Main {
-
     public static void main(String[] args) {
-        Game<? extends State, ? extends Action> g = new TicTacToe();
+        Game<? extends State, ? extends Action> game = new TicTacToe();
         TTTState s = new TTTState();
-        Algorithm mm = new MiniMax((Game<State, Action>) g);
-        Algorithm rnd = new RandomMove((Game<State, Action>) g);
+        Algorithm mm = new MiniMax((Game<State, Action>) game);
+        Algorithm rnd = new RandomMove((Game<State, Action>) game);
 
-        playMatch((Game<State, Action>) g, s, mm, rnd);
+        playMatch((Game<State, Action>) game, s, rnd, mm);
     }
 
     private static void playMatch(Game<State, Action> g, State s, Algorithm p1, Algorithm p2) {
@@ -28,7 +27,6 @@ public class Main {
                 Action a = p1.nextMove(s);
                 s = g.apply(a, s);
             } else {
-                System.out.println(s);
                 break;
             }
 
@@ -37,9 +35,9 @@ public class Main {
                 TTTAction a = (TTTAction) p2.nextMove(s);
                 s = g.apply(a, s);
             } else {
-                System.out.println(s);
                 break;
             }
         }
+        System.out.println(s);
     }
 }

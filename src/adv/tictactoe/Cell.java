@@ -1,7 +1,6 @@
 package adv.tictactoe;
 
-public class Cell {
-
+class Cell {
     public final int row;
     public final int col;
     private final Value val;

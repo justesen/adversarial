@@ -8,12 +8,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class TicTacToe implements Game<TTTState, TTTAction> {
-
     @Override
     public List<TTTAction> actions(TTTState s) {
         return s.cells().stream()
                 .filter(Cell::isFree)
-                .map(c -> new TTTAction(c, s.currentPlayer()))
+                .map(c -> new TTTAction(c.row, c.col, s.currentPlayer()))
                 .collect(Collectors.toCollection(LinkedList::new));
     }
 

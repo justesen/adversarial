@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Random;
 
 public class RandomMove implements Algorithm {
-
     private final Game<State, Action> game;
 
     public RandomMove(Game<State, Action> game) {

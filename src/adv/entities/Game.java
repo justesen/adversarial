@@ -3,7 +3,6 @@ package adv.entities;
 import java.util.List;
 
 public interface Game<S extends State, A extends Action> {
-
     List<A> actions(S s);
 
     boolean isPlayerMax(S s);

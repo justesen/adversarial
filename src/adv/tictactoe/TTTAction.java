@@ -4,12 +4,13 @@ import adv.entities.Action;
 import adv.entities.Player;
 
 public class TTTAction implements Action {
-
-    public final Cell cell;
+    public final int row;
+    public final int col;
     public final Player player;
 
-    public TTTAction(Cell cell, Player player) {
-        this.cell = cell;
+    public TTTAction(int row, int col, Player player) {
+        this.row = row;
+        this.col = col;
         this.player = player;
     }
 }

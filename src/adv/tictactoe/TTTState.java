@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 public class TTTState implements State {
-
     private static final int SIZE = 3;
     private final Value[][] board;
     private final Player player;
@@ -31,7 +30,7 @@ public class TTTState implements State {
             System.arraycopy(s.board[i], 0, board[i], 0, SIZE);
         }
 
-        board[a.cell.row][a.cell.col] = (a.player == Player.MAX ? Value.X : Value.O);
+        board[a.row][a.col] = (a.player == Player.MAX ? Value.X : Value.O);
     }
 
     public Player currentPlayer() {
@@ -46,7 +45,6 @@ public class TTTState implements State {
                 cells.add(new adv.tictactoe.Cell(i, j, board[i][j]));
             }
         }
-
         return cells;
     }
 
@@ -99,7 +97,6 @@ public class TTTState implements State {
             }
             s = s + "#\n";
         }
-
         s = s + "#####";
 
         return s;
