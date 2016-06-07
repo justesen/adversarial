@@ -3,6 +3,7 @@ package adv;
 import adv.algorithms.Algorithm;
 import adv.algorithms.MiniMax;
 import adv.algorithms.Random;
+import adv.algorithms.UTC;
 import adv.entities.Action;
 import adv.entities.Game;
 import adv.entities.State;
@@ -15,8 +16,9 @@ public class Main {
         State s = new TTTState();
         Algorithm mm = new MiniMax((Game<State, Action>) game);
         Algorithm rnd = new Random((Game<State, Action>) game);
+        Algorithm utc = new UTC((Game<State, Action>) game, Math.sqrt(2), 100);
 
-        playMatch((Game<State, Action>) game, s, rnd, mm);
+        playMatch((Game<State, Action>) game, s, mm, utc);
     }
 
     private static void playMatch(Game<State, Action> g, State s, Algorithm p1, Algorithm p2) {
@@ -45,7 +47,15 @@ public class Main {
                 break;
             }
         }
+
         System.out.println(s);
-        System.out.println("Game over");
+
+        if (g.utility(s) > 0) {
+            System.out.println("Player 1 won");
+        } else if (g.utility(s) < 0) {
+            System.out.println("Player 2 won");
+        } else {
+            System.out.println("Game is draw");
+        }
     }
 }

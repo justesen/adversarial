@@ -3,6 +3,7 @@ package adv.tictactoe;
 import adv.entities.Player;
 import adv.entities.State;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -99,5 +100,26 @@ public class TTTState implements State {
         }
 
         return s;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        TTTState s = (TTTState) o;
+
+        return Arrays.deepEquals(board, s.board) && player == s.player;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(board) * 31 + player.hashCode();
     }
 }
