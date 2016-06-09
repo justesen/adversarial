@@ -115,7 +115,6 @@ public class TTTState implements State {
         TTTState s = (TTTState) o;
 
         return Arrays.deepEquals(board, s.board) && player == s.player;
-
     }
 
     @Override

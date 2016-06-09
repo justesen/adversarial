@@ -1,12 +1,21 @@
 package adv.qbf;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
 public class QDIMACS {
-    public static QBFState parse(BufferedReader in) throws IOException {
+    public static QBFState parse(String path) throws IOException {
+        BufferedReader in = new BufferedReader(new FileReader(path));
+        QBFState s = parse(in);
+        in.close();
+
+        return s;
+    }
+
+    private static QBFState parse(BufferedReader in) throws IOException {
         String line;
         String[] elems;
 

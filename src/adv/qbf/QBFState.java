@@ -51,6 +51,7 @@ class QBFState implements State {
                     return Result.False;
             }
         }
+
         return allTrue ? Result.True : Result.Undetermined;
     }
 
@@ -84,6 +85,7 @@ class QBFState implements State {
         if (this == o) {
             return true;
         }
+
         if (o == null || getClass() != o.getClass()) {
             return false;
         }

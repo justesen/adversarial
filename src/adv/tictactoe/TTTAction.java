@@ -16,6 +16,6 @@ class TTTAction implements Action {
 
     @Override
     public String toString() {
-        return (player == Player.MAX ? "X" : "O") + " placed on (" + ((char) (col + 'a')) + ", " + (row + 1) + "):";
+        return "Place " + (player == Player.MAX ? "X" : "O") + " on (" + ((char) (col + 'a')) + ", " + (row + 1) + ")";
     }
 }

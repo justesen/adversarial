@@ -1,9 +1,6 @@
 package adv;
 
-import adv.algorithms.Algorithm;
-import adv.algorithms.MiniMax;
-import adv.algorithms.Random;
-import adv.algorithms.UCT;
+import adv.algorithms.*;
 import adv.entities.Action;
 import adv.entities.Game;
 import adv.entities.State;
@@ -12,8 +9,6 @@ import adv.qbf.QDIMACS;
 import adv.tictactoe.TTTState;
 import adv.tictactoe.TicTacToe;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 
 public class Main {
@@ -26,14 +21,15 @@ public class Main {
             init = new TTTState();
         } else {
             game = new QBFSAT();
-            init = QDIMACS.parse(new BufferedReader(new FileReader("instances/qbf/2.qbf")));
+            init = QDIMACS.parse("instances/qbf/2.qbf");
         }
 
         Algorithm mm = new MiniMax((Game<State, Action>) game);
         Algorithm rnd = new Random((Game<State, Action>) game);
+        Algorithm hmn = new Human((Game<State, Action>) game);
         Algorithm uct = new UCT((Game<State, Action>) game, Math.sqrt(2), 100);
 
-        playMatch((Game<State, Action>) game, init, uct, mm);
+        playMatch((Game<State, Action>) game, init, rnd, uct);
     }
 
     private static void playMatch(Game<State, Action> g, State s, Algorithm p1, Algorithm p2) {
