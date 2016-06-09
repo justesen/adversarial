@@ -3,7 +3,7 @@ package adv;
 import adv.algorithms.Algorithm;
 import adv.algorithms.MiniMax;
 import adv.algorithms.Random;
-import adv.algorithms.UTC;
+import adv.algorithms.UCT;
 import adv.entities.Action;
 import adv.entities.Game;
 import adv.entities.State;
@@ -31,7 +31,7 @@ public class Main {
 
         Algorithm mm = new MiniMax((Game<State, Action>) game);
         Algorithm rnd = new Random((Game<State, Action>) game);
-        Algorithm utc = new UTC((Game<State, Action>) game, Math.sqrt(2), 100);
+        Algorithm utc = new UCT((Game<State, Action>) game, Math.sqrt(2), 100);
 
         playMatch((Game<State, Action>) game, init, mm, mm);
     }

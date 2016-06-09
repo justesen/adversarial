@@ -19,9 +19,11 @@ class QBFState implements State {
     }
 
     QBFState(QBFState s, QBFAction a) {
+        // Action should be variable of outermost quantifier
         if (s.quantifiers.getFirst().variable != a.variable) {
             throw new IllegalArgumentException();
         }
+
         this.quantifiers = new LinkedList<>(s.quantifiers);
         this.quantifiers.pollFirst();
         this.clauses = new LinkedList<>(s.clauses);

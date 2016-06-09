@@ -7,7 +7,7 @@ import adv.util.Timer;
 
 import java.util.*;
 
-public class UTC implements Algorithm {
+public class UCT implements Algorithm {
     private final Game<State, Action> game;
     private final double c;
     private final long timeCap;
@@ -15,7 +15,7 @@ public class UTC implements Algorithm {
     private final Map<State, Integer> visits;
     private final Map<State, Double> utilities;
 
-    public UTC(Game<State, Action> game, double c, long timeCap) {
+    public UCT(Game<State, Action> game, double c, long timeCap) {
         this.game = game;
         this.c = c;
         this.timeCap = timeCap;
