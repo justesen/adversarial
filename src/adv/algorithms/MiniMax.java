@@ -11,24 +11,20 @@ public class MiniMax implements Algorithm {
         this.game = game;
     }
 
-    public boolean hasNextMove(State s) {
-        return !game.isTerminal(s);
-    }
-
     public Action nextMove(State s) {
         if (game.isPlayerMax(s)) {
-            return argmax(s, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            return argmax(s);
         } else {
-            return argmin(s, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            return argmin(s);
         }
     }
 
-    private Action argmax(State s, int alpha, int beta) {
-        return combiMax(s, alpha, beta).arg;
+    private Action argmax(State s) {
+        return combiMax(s, Integer.MIN_VALUE, Integer.MAX_VALUE).arg;
     }
 
-    private Action argmin(State s, int alpha, int beta) {
-        return combiMin(s, alpha, beta).arg;
+    private Action argmin(State s) {
+        return combiMin(s, Integer.MIN_VALUE, Integer.MAX_VALUE).arg;
     }
 
     private int max(State s, int alpha, int beta) {
@@ -48,7 +44,7 @@ public class MiniMax implements Algorithm {
         Action argmax = null;
 
         for (Action a : game.actions(s)) {
-            int v = min(game.apply(a, s), alpha, beta);
+            int v = game.isPlayerMax(s) ? max(game.apply(a, s), alpha, beta) : min(game.apply(a, s), alpha, beta);
 
             if (v > max) {
                 max = v;
@@ -72,7 +68,7 @@ public class MiniMax implements Algorithm {
         Action argmin = null;
 
         for (Action a : game.actions(s)) {
-            int v = max(game.apply(a, s), alpha, beta);
+            int v = game.isPlayerMax(s) ? max(game.apply(a, s), alpha, beta) : min(game.apply(a, s), alpha, beta);
 
             if (v < min) {
                 min = v;

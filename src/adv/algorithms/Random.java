@@ -14,11 +14,6 @@ public class Random implements Algorithm {
     }
 
     @Override
-    public boolean hasNextMove(State s) {
-        return !game.isTerminal(s);
-    }
-
-    @Override
     public Action nextMove(State s) {
         List<Action> actions = game.actions(s);
         int elem = new java.util.Random().nextInt(actions.size());

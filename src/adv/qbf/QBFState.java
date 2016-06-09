@@ -37,21 +37,43 @@ public class QBFState implements State {
         return !quantifiers.isEmpty() && quantifiers.getFirst().isExistential();
     }
 
-    public boolean isDetermined() {
+    public Result isDetermined() {
+        boolean allTrue = true;
+
         for (Clause c : clauses) {
-            if (!c.isDetermined(assignments)) {
-                return false;
+            switch (c.isDetermined(assignments)) {
+                case Undetermined:
+                    allTrue = false;
+                    break;
+                case False:
+                    return Result.False;
             }
         }
-        return true;
+        return allTrue ? Result.True : Result.Undetermined;
     }
 
-    public boolean isTrue() {
-        for (Clause c : clauses) {
-            if (!c.isTrue(assignments)) {
-                return false;
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+
+        for (Quantifier q : quantifiers) {
+            s.append(q.isExistential() ? "\u2203" : "\u2200");
+            s.append(q.var());
+            s.append(".");
+        }
+
+        if (!clauses.isEmpty()) {
+            s.append(clauses.get(0).toString(assignments));
+
+            for (Clause c : clauses.subList(1, clauses.size())) {
+                s.append(" \u2227 ");
+
+                s.append(c.toString(assignments));
             }
         }
-        return true;
+
+        s.append("\n");
+
+        return s.toString();
     }
 }

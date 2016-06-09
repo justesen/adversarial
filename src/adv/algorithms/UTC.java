@@ -25,11 +25,6 @@ public class UTC implements Algorithm {
     }
 
     @Override
-    public boolean hasNextMove(State s) {
-        return !game.isTerminal(s);
-    }
-
-    @Override
     public Action nextMove(State s) {
         Timer t = new Timer(timeCap);
 
@@ -83,23 +78,11 @@ public class UTC implements Algorithm {
     }
 
     private int randomPlayout(State s) {
-        Random p1 = new Random(game);
-        Random p2 = new Random(game);
+        Random p = new Random(game);
 
-        while (true) {
-            if (p1.hasNextMove(s)) {
-                Action a = p1.nextMove(s);
-                s = game.apply(a, s);
-            } else {
-                break;
-            }
-
-            if (p2.hasNextMove(s)) {
-                Action a = p2.nextMove(s);
-                s = game.apply(a, s);
-            } else {
-                break;
-            }
+        while (!game.isTerminal(s)) {
+            Action a = p.nextMove(s);
+            s = game.apply(a, s);
         }
 
         return game.utility(s);
