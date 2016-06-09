@@ -1,19 +1,19 @@
 package adv.qbf;
 
 class Quantifier {
-    private final boolean ex;
-    private final String var;
+    private final boolean isExistential;
+    private final String variable;
 
-    Quantifier(boolean ex, String var) {
-        this.ex = ex;
-        this.var = var;
+    Quantifier(boolean isExistential, String variable) {
+        this.isExistential = isExistential;
+        this.variable = variable;
     }
 
     boolean isExistential() {
-        return ex;
+        return isExistential;
     }
 
-    String var() {
-        return var;
+    String variable() {
+        return variable;
     }
 }

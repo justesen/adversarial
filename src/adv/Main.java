@@ -8,11 +8,16 @@ import adv.entities.Action;
 import adv.entities.Game;
 import adv.entities.State;
 import adv.qbf.QBFSAT;
+import adv.qbf.QDIMACS;
 import adv.tictactoe.TTTState;
 import adv.tictactoe.TicTacToe;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Game<? extends State, ? extends Action> game;
         State init;
 
@@ -21,7 +26,7 @@ public class Main {
             init = new TTTState();
         } else {
             game = new QBFSAT();
-            init = QBFSAT.parse("A x.E y.A z.x z and y");
+            init = QDIMACS.parse(new BufferedReader(new FileReader("instances/qbf/1.qbf")));
         }
 
         Algorithm mm = new MiniMax((Game<State, Action>) game);

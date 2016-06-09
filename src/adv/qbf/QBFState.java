@@ -19,18 +19,18 @@ public class QBFState implements State {
     }
 
     public QBFState(QBFState s, QBFAction a) {
-        if (!s.quantifiers.getFirst().var().equals(a.var)) {
+        if (!s.quantifiers.getFirst().variable().equals(a.variable)) {
             throw new IllegalArgumentException();
         }
         this.quantifiers = new LinkedList<>(s.quantifiers);
         this.quantifiers.pollFirst();
         this.clauses = new LinkedList<>(s.clauses);
         this.assignments = new HashMap<>(s.assignments);
-        this.assignments.put(a.var, a.val);
+        this.assignments.put(a.variable, a.value);
     }
 
     public String outermostVariable() {
-        return quantifiers.getFirst().var();
+        return quantifiers.getFirst().variable();
     }
 
     public boolean isOutermostQuantifierExistential() {
@@ -58,7 +58,7 @@ public class QBFState implements State {
 
         for (Quantifier q : quantifiers) {
             s.append(q.isExistential() ? "\u2203" : "\u2200");
-            s.append(q.var());
+            s.append(q.variable());
             s.append(".");
         }
 

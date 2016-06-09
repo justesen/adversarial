@@ -3,16 +3,16 @@ package adv.qbf;
 import adv.entities.Action;
 
 class QBFAction implements Action {
-    final String var;
-    final boolean val;
+    final String variable;
+    final boolean value;
 
-    QBFAction(String var, boolean val) {
-        this.var = var;
-        this.val = val;
+    QBFAction(String variable, boolean value) {
+        this.variable = variable;
+        this.value = value;
     }
 
     @Override
     public String toString() {
-        return var + " = " + (val ? "T" : "F");
+        return variable + " = " + (value ? "T" : "F");
     }
 }
