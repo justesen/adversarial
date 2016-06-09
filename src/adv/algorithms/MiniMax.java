@@ -13,18 +13,18 @@ public class MiniMax implements Algorithm {
 
     public Action nextMove(State s) {
         if (game.isPlayerMax(s)) {
-            return argmax(s);
+            return argmax(s, Integer.MIN_VALUE, Integer.MAX_VALUE);
         } else {
-            return argmin(s);
+            return argmin(s, Integer.MIN_VALUE, Integer.MAX_VALUE);
         }
     }
 
-    private Action argmax(State s) {
-        return combiMax(s, Integer.MIN_VALUE, Integer.MAX_VALUE).arg;
+    private Action argmax(State s, int alpha, int beta) {
+        return combiMax(s, alpha, beta).arg;
     }
 
-    private Action argmin(State s) {
-        return combiMin(s, Integer.MIN_VALUE, Integer.MAX_VALUE).arg;
+    private Action argmin(State s, int alpha, int beta) {
+        return combiMin(s, alpha, beta).arg;
     }
 
     private int max(State s, int alpha, int beta) {

@@ -11,6 +11,7 @@ import adv.tictactoe.TicTacToe;
 
 import java.io.IOException;
 
+@SuppressWarnings({"UnusedAssignment", "unchecked"})
 public class Main {
     public static void main(String[] args) throws IOException {
         Game<? extends State, ? extends Action> game;
@@ -27,7 +28,7 @@ public class Main {
         Algorithm mm = new MiniMax((Game<State, Action>) game);
         Algorithm rnd = new Random((Game<State, Action>) game);
         Algorithm hmn = new Human((Game<State, Action>) game);
-        Algorithm uct = new UCT((Game<State, Action>) game, Math.sqrt(2), 100);
+        Algorithm uct = new MonteCarloUCT((Game<State, Action>) game, Math.sqrt(2), 100);
 
         playMatch((Game<State, Action>) game, init, rnd, uct);
     }

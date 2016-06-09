@@ -5,21 +5,21 @@ import adv.entities.Game;
 import adv.entities.State;
 import adv.util.Timer;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
-public class UCT implements Algorithm {
-    private final Game<State, Action> game;
+abstract class UCT implements Algorithm {
+    protected final Game<State, Action> game;
     private final double c;
     private final long timeCap;
-    private final Set<State> searchTree;
     private final Map<State, Integer> visits;
     private final Map<State, Double> utilities;
 
-    public UCT(Game<State, Action> game, double c, long timeCap) {
+    UCT(Game<State, Action> game, double c, long timeCap) {
         this.game = game;
         this.c = c;
         this.timeCap = timeCap;
-        this.searchTree = new HashSet<>();
         this.visits = new HashMap<>();
         this.utilities = new HashMap<>();
     }
@@ -43,7 +43,7 @@ public class UCT implements Algorithm {
         if (game.isTerminal(s)) {
             r = game.utility(s);
         } else if (visits(s) == 0) {
-            r = randomPlayout(s);
+            r = estimatedUtility(s);
         } else {
             State t = game.apply(selectMove(s, c), s);
             r = UCTRecurse(t);
@@ -63,7 +63,7 @@ public class UCT implements Algorithm {
 
                         return utility(t) + c * Math.sqrt(Math.log(visits(s)) / visits(t));
                     }))
-                    .get();
+                    .orElse(null);
         } else {
             return game.actions(s).stream()
                     .min(Comparator.comparing(a -> {
@@ -71,20 +71,11 @@ public class UCT implements Algorithm {
 
                         return utility(t) - c * Math.sqrt(Math.log(visits(s)) / visits(t));
                     }))
-                    .get();
+                    .orElse(null);
         }
     }
 
-    private int randomPlayout(State s) {
-        Random p = new Random(game);
-
-        while (!game.isTerminal(s)) {
-            Action a = p.nextMove(s);
-            s = game.apply(a, s);
-        }
-
-        return game.utility(s);
-    }
+    protected abstract int estimatedUtility(State s);
 
     private double utility(State s) {
         return utilities.getOrDefault(s, 0.0);
