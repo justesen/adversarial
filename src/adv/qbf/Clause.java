@@ -1,44 +1,43 @@
 package adv.qbf;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 class Clause {
-    private final List<String> positives;
-    private final List<String> negatives;
+    private final List<Integer> literals;
 
-    Clause(List<String> positives, List<String> negatives) {
-        this.positives = positives;
-        this.negatives = negatives;
+    Clause(List<Integer> literals) {
+        this.literals = literals;
     }
 
-    Result isDetermined(Map<String, Boolean> assignments) {
+    Result isDetermined(Map<Integer, Boolean> assignments) {
         boolean allFalse = true;
 
-        for (String x : positives) {
-            if (assignments.containsKey(x)) {
-                if (assignments.get(x)) {
-                    return Result.True;
+        for (int v : literals) {
+            if (v > 0) {
+                if (assignments.containsKey(v)) {
+                    if (assignments.get(v)) {
+                        return Result.True;
+                    }
+                } else {
+                    allFalse = false;
                 }
             } else {
-                allFalse = false;
-            }
-        }
-        for (String x : negatives) {
-            if (assignments.containsKey(x)) {
-                if (!assignments.get(x)) {
-                    return Result.True;
+                if (assignments.containsKey(-v)) {
+                    if (!assignments.get(-v)) {
+                        return Result.True;
+                    }
+                } else {
+                    allFalse = false;
                 }
-            } else {
-                allFalse = false;
             }
         }
+
         return allFalse ? Result.False : Result.Undetermined;
     }
 
-    String toString(Map<String, Boolean> assignments) {
+    String toString(Map<Integer, Boolean> assignments) {
         switch (isDetermined(assignments)) {
             case True:
                 return "T";
@@ -47,24 +46,18 @@ class Clause {
         }
 
         StringBuilder s = new StringBuilder();
-        List<String> literals = new LinkedList<>();
+        List<String> variables = literals.stream()
+                .filter(v -> !assignments.containsKey(Math.abs(v)))
+                .map(v -> v < 0 ? "\u00AC" + (-v) : "" + v)
+                .collect(Collectors.toList());
 
-        literals.addAll(positives.stream()
-                .filter(v -> !assignments.containsKey(v))
-                .collect(Collectors.toList()));
-
-        literals.addAll(negatives.stream()
-                .filter(v -> !assignments.containsKey(v))
-                .map(v -> "\u00AC" + v)
-                .collect(Collectors.toList()));
-
-        if (literals.size() == 1) {
-            s.append(literals.get(0));
+        if (variables.size() == 1) {
+            s.append(variables.get(0));
         } else {
             s.append("(");
-            s.append(literals.get(0));
+            s.append(variables.get(0));
 
-            for (String v : literals.subList(1, literals.size())) {
+            for (String v : variables.subList(1, variables.size())) {
                 s.append(" \u2228 ");
                 s.append(v);
             }

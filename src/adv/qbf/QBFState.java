@@ -7,19 +7,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class QBFState implements State {
+class QBFState implements State {
     private LinkedList<Quantifier> quantifiers;
     private List<Clause> clauses;
-    private Map<String, Boolean> assignments;
+    private Map<Integer, Boolean> assignments;
 
-    public QBFState(LinkedList<Quantifier> quantifiers, List<Clause> clauses) {
+    QBFState(LinkedList<Quantifier> quantifiers, List<Clause> clauses) {
         this.quantifiers = quantifiers;
         this.clauses = clauses;
         this.assignments = new HashMap<>();
     }
 
-    public QBFState(QBFState s, QBFAction a) {
-        if (!s.quantifiers.getFirst().variable().equals(a.variable)) {
+    QBFState(QBFState s, QBFAction a) {
+        if (s.quantifiers.getFirst().variable != a.variable) {
             throw new IllegalArgumentException();
         }
         this.quantifiers = new LinkedList<>(s.quantifiers);
@@ -29,15 +29,15 @@ public class QBFState implements State {
         this.assignments.put(a.variable, a.value);
     }
 
-    public String outermostVariable() {
-        return quantifiers.getFirst().variable();
+    int outermostVariable() {
+        return quantifiers.getFirst().variable;
     }
 
-    public boolean isOutermostQuantifierExistential() {
+    boolean isOutermostQuantifierExistential() {
         return !quantifiers.isEmpty() && quantifiers.getFirst().isExistential();
     }
 
-    public Result isDetermined() {
+    Result isDetermined() {
         boolean allTrue = true;
 
         for (Clause c : clauses) {
@@ -58,7 +58,7 @@ public class QBFState implements State {
 
         for (Quantifier q : quantifiers) {
             s.append(q.isExistential() ? "\u2203" : "\u2200");
-            s.append(q.variable());
+            s.append(q.variable);
             s.append(".");
         }
 

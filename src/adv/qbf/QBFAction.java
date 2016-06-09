@@ -3,10 +3,10 @@ package adv.qbf;
 import adv.entities.Action;
 
 class QBFAction implements Action {
-    final String variable;
+    final int variable;
     final boolean value;
 
-    QBFAction(String variable, boolean value) {
+    QBFAction(int variable, boolean value) {
         this.variable = variable;
         this.value = value;
     }

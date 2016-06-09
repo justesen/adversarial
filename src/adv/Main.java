@@ -26,14 +26,14 @@ public class Main {
             init = new TTTState();
         } else {
             game = new QBFSAT();
-            init = QDIMACS.parse(new BufferedReader(new FileReader("instances/qbf/1.qbf")));
+            init = QDIMACS.parse(new BufferedReader(new FileReader("instances/qbf/2.qbf")));
         }
 
         Algorithm mm = new MiniMax((Game<State, Action>) game);
         Algorithm rnd = new Random((Game<State, Action>) game);
         Algorithm utc = new UTC((Game<State, Action>) game, Math.sqrt(2), 100);
 
-        playMatch((Game<State, Action>) game, init, mm, rnd);
+        playMatch((Game<State, Action>) game, init, mm, mm);
     }
 
     private static void playMatch(Game<State, Action> g, State s, Algorithm p1, Algorithm p2) {
