@@ -42,10 +42,8 @@ public class UCT implements Algorithm {
 
         if (game.isTerminal(s)) {
             r = game.utility(s);
-            searchTree.add(s);
-        } else if (!searchTree.contains(s)) {
+        } else if (visits(s) == 0) {
             r = randomPlayout(s);
-            searchTree.add(s);
         } else {
             State t = game.apply(selectMove(s, c), s);
             r = UCTRecurse(t);

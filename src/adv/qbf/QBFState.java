@@ -78,4 +78,23 @@ class QBFState implements State {
 
         return s.toString();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        QBFState s = (QBFState) o;
+
+        return assignments != null ? assignments.equals(s.assignments) : s.assignments == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return assignments != null ? assignments.hashCode() : 0;
+    }
 }

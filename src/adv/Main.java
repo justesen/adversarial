@@ -31,9 +31,9 @@ public class Main {
 
         Algorithm mm = new MiniMax((Game<State, Action>) game);
         Algorithm rnd = new Random((Game<State, Action>) game);
-        Algorithm utc = new UCT((Game<State, Action>) game, Math.sqrt(2), 100);
+        Algorithm uct = new UCT((Game<State, Action>) game, Math.sqrt(2), 100);
 
-        playMatch((Game<State, Action>) game, init, mm, mm);
+        playMatch((Game<State, Action>) game, init, uct, mm);
     }
 
     private static void playMatch(Game<State, Action> g, State s, Algorithm p1, Algorithm p2) {

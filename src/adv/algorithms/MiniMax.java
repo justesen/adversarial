@@ -44,7 +44,8 @@ public class MiniMax implements Algorithm {
         Action argmax = null;
 
         for (Action a : game.actions(s)) {
-            int v = game.isPlayerMax(s) ? max(game.apply(a, s), alpha, beta) : min(game.apply(a, s), alpha, beta);
+            State t = game.apply(a, s);
+            int v = game.isPlayerMax(t) ? max(t, alpha, beta) : min(t, alpha, beta);
 
             if (v > max) {
                 max = v;
@@ -68,7 +69,8 @@ public class MiniMax implements Algorithm {
         Action argmin = null;
 
         for (Action a : game.actions(s)) {
-            int v = game.isPlayerMax(s) ? max(game.apply(a, s), alpha, beta) : min(game.apply(a, s), alpha, beta);
+            State t = game.apply(a, s);
+            int v = game.isPlayerMax(t) ? max(t, alpha, beta) : min(t, alpha, beta);
 
             if (v < min) {
                 min = v;
