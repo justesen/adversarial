@@ -5,7 +5,9 @@ import adv.entities.Action;
 import adv.entities.Game;
 import adv.entities.State;
 import adv.qbf.QBFSAT;
+import adv.qbf.QBFState;
 import adv.qbf.QDIMACS;
+import adv.qbf.QDPLL;
 import adv.tictactoe.TTTState;
 import adv.tictactoe.TicTacToe;
 
@@ -21,8 +23,12 @@ public class Main {
             game = new TicTacToe();
             init = new TTTState();
         } else {
+            QBFState formula = QDIMACS.parse("instances/qbf/eval2012r2/adder-6-sat.qdimacs");
+            QDPLL qdpll = new QDPLL(formula);
+            System.out.println("QDPLL: " + qdpll.evaluate());
+
             game = new QBFSAT();
-            init = QDIMACS.parse("instances/qbf/2.qbf");
+            init = formula;
         }
 
         Algorithm mm = new MiniMax((Game<State, Action>) game);
@@ -30,7 +36,7 @@ public class Main {
         Algorithm hmn = new Human((Game<State, Action>) game);
         Algorithm uct = new MonteCarloUCT((Game<State, Action>) game, Math.sqrt(2), 100);
 
-        playMatch((Game<State, Action>) game, init, rnd, uct);
+        playMatch((Game<State, Action>) game, init, uct, uct);
     }
 
     private static void playMatch(Game<State, Action> g, State s, Algorithm p1, Algorithm p2) {

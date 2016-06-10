@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-class QBFState implements State {
+public class QBFState implements State {
     private LinkedList<Quantifier> quantifiers;
     private List<Clause> clauses;
     private Map<Integer, Boolean> assignments;
@@ -53,6 +53,14 @@ class QBFState implements State {
         }
 
         return allTrue ? Result.True : Result.Undetermined;
+    }
+
+    LinkedList<Quantifier> getQuantifiers() {
+        return new LinkedList<>(quantifiers);
+    }
+
+    List<Clause> getClauses() {
+        return new LinkedList<>(clauses);
     }
 
     @Override

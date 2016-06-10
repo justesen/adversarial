@@ -37,6 +37,10 @@ class Clause {
         return allFalse ? Result.False : Result.Undetermined;
     }
 
+    boolean isEmpty() {
+        return literals.isEmpty();
+    }
+
     String toString(Map<Integer, Boolean> assignments) {
         switch (isDetermined(assignments)) {
             case True:
