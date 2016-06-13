@@ -13,6 +13,6 @@ public class Timer {
     }
 
     public boolean isTimeRemaining() {
-        return System.currentTimeMillis() - startTime < timeCap;
+        return timeCap < 0 || System.currentTimeMillis() - startTime < timeCap;
     }
 }

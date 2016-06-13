@@ -19,7 +19,7 @@ public class QBFSAT implements Game<QBFState, QBFAction> {
 
     @Override
     public boolean isPlayerMax(QBFState s) {
-        return s.isOutermostQuantifierExistential();
+        return s.isExistential();
     }
 
     @Override

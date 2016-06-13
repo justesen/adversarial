@@ -13,21 +13,15 @@ import java.io.IOException;
 @SuppressWarnings({"UnusedAssignment", "unchecked"})
 public class Main {
     public static void main(String[] args) throws IOException {
-        Game<? extends State, ? extends Action> game;
-        State init;
+        if (args.length > 0) {
+            Game<? extends State, ? extends Action> game;
+            State init;
 
-        if (args.length > 0 && args[0].equals("qbf")) {
-            QBFState formula = QDIMACS.parse("instances/qbf/2_sat.qbf");
-            QDPLL qdpll = new QDPLL();
-            System.out.println("QDPLL: " + qdpll.evaluate(formula));
-            UCTQBF uctqbf = new UCTQBF(Math.sqrt(2));
-            uctqbf.start(formula);
-        } else {
-            if (args.length > 0 && args[0].equals("ttt")) {
+            if (args[0].equals("ttt")) {
                 game = new TicTacToe();
                 init = new TTTState();
-            } else {
-                QBFState formula = QDIMACS.parse("instances/qbf/eval2012r2/adder-10-sat.qdimacs");
+            } else { // if (args[0].equals("qbf")) {
+                QBFState formula = QDIMACS.parse("instances/qbf/eval2012r2/adder-6-sat.qdimacs");
                 QDPLL qdpll = new QDPLL();
                 System.out.println("QDPLL: " + qdpll.evaluate(formula));
 
@@ -41,6 +35,13 @@ public class Main {
             Algorithm uct = new MonteCarloUCT((Game<State, Action>) game, Math.sqrt(2), 100);
 
             playMatch((Game<State, Action>) game, init, uct, uct);
+        } else {
+            QBFState formula = QDIMACS.parse("instances/qbf/3_sat.qbf");
+            QDPLL qdpll = new QDPLL();
+            UCTQBF uctqbf = new UCTQBF(Math.sqrt(2), -1);
+
+            System.out.printf("QDPLL: %s (explored %s nodes)\n", qdpll.evaluate(formula), qdpll.nodes);
+            System.out.printf("UCT:   %s (explored %s nodes)\n", uctqbf.evaluate(formula), uctqbf.nodes);
         }
     }
 

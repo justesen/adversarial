@@ -1,132 +1,108 @@
 package adv.qbf;
 
+import adv.util.Timer;
+
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
 
-import static java.util.Arrays.stream;
-
 public class UCTQBF {
     private final double c;
+    private final Timer timer;
+    public int nodes;
 
-    public UCTQBF(double c) {
+    public UCTQBF(double c, long timeCap) {
         this.c = c;
+        this.timer = new Timer(timeCap);
     }
 
-    public void start(QBFState s) {
+    public UCTResult evaluate(QBFState s) {
         Node root = new Node(s);
+        UCTResult r = null;
 
-        while (!root.areAllChildrenClosed()) {
-            UCTRecurse(root);
+        timer.start();
+
+        while (r == null || (r.isUndetermined() && timer.isTimeRemaining())) {
+            nodes++;
+            r = UCTRecurse(root);
         }
-
-        System.out.println("Formula is false!");
-    }
-
-    private int UCTRecurse(Node node) {
-        int r;
-
-        if (node.n == 0) {
-            r = utility(node.state);
-
-            if (r == +1) {
-                System.out.println("Formula is true!");
-                System.exit(0);
-            } else if (r == -1) {
-                node.close();
-                System.out.println("Formula is false!");
-                System.exit(0);
-            } else {
-                r = estimatedUtility(node.state);
-                node.addChildren();
-            }
-        } else {
-            Node child = selectMove(node);
-
-            r = UCTRecurse(child);
-
-            if (r == -1 && node.areAllChildrenClosed()) {
-                node.close();
-            }
-        }
-        node.n++;
-        node.Q = node.Q + (r - node.Q) / node.n;
 
         return r;
     }
 
-    private Node selectMove(Node node) {
-        if (node.state.isOutermostQuantifierExistential()) {
-            return stream(node.children())
-                    .filter(child -> !child.isClosed())
-                    .max(Comparator.comparing(child -> utility(child.state) + c * Math.sqrt(Math.log(node.n) / child.n)))
+    private UCTResult UCTRecurse(Node node) {
+        UCTResult r = null;
+
+        if (node.isUnvisited()) {
+            switch (node.state.isDetermined()) {
+                case True:
+                    node.mark(true);
+                    return new UCTResult(true);
+                case False:
+                    node.mark(false);
+                    return new UCTResult(false);
+                case Undetermined:
+                    node.addChildren();
+                    r = new UCTResult(estimatedUtility(node.state));
+            }
+        } else {
+            Node child = selectChild(node);
+            UCTResult s = UCTRecurse(child);
+
+            if (node.state.isExistential() && s.isTrue()) {
+                node.mark(true);
+                return s;
+            } else if (node.state.isExistential() && node.allChildrenAreFalse()) {
+                node.mark(false);
+                return s;
+            } else if (node.state.isUniversal() && s.isFalse()) {
+                node.mark(false);
+                return s;
+            } else if (node.state.isUniversal() && node.allChildrenAreTrue()) {
+                node.mark(true);
+                return s;
+            } else {
+                if (s.isTrue()) {
+                    r = new UCTResult(+1.0);
+                } else if (s.isFalse()) {
+                    r = new UCTResult(-1.0);
+                } else {
+                    r = new UCTResult(s.utility());
+                }
+            }
+        }
+
+        node.visit();
+        node.updateUtility(r.utility());
+
+        return r;
+    }
+
+    private Node selectChild(Node node) {
+        if (node.state.isExistential()) {
+            return Arrays.stream(node.children())
+                    .filter(child -> !child.isMarked())
+                    .max(Comparator.comparing(child ->
+                            child.utility() + c * Math.sqrt(Math.log(node.visits()) / child.visits())))
                     .orElse(null);
         } else {
-            return stream(node.children())
-                    .filter(child -> !child.isClosed())
-                    .min(Comparator.comparing(child -> utility(child.state) - c * Math.sqrt(Math.log(node.n) / child.n)))
+            return Arrays.stream(node.children())
+                    .filter(child -> !child.isMarked())
+                    .min(Comparator.comparing(child ->
+                            child.utility() - c * Math.sqrt(Math.log(node.visits()) / child.visits())))
                     .orElse(null);
         }
     }
 
     private int estimatedUtility(QBFState s) {
         while (s.isDetermined() == Result.Undetermined) {
-            s = new QBFState(s, new QBFAction(s.outermostVariable(), (new Random()).nextBoolean()));
+            s = new QBFState(s, (new Random()).nextBoolean());
         }
 
-        return utility(s);
-    }
-
-    private int utility(QBFState s) {
-        switch (s.isDetermined()) {
-            case True:
-                return +1;
-            case False:
-                return -1;
-        }
-        return 0;
-    }
-}
-
-class Node {
-    public final QBFState state;
-    public int n;
-    public double Q;
-    private boolean closed;
-    private Node[] children;
-
-    public Node(QBFState state) {
-        this.state = state;
-        this.n = 0;
-        this.Q = 0;
-        this.closed = false;
-    }
-
-    public void close() {
-        this.closed = true;
-    }
-
-    public Node[] children() {
-        return children;
-    }
-
-    public void addChildren() {
-        int v = state.outermostVariable();
-        children = new Node[2];
-        children[0] = new Node(new QBFState(state, new QBFAction(v, true)));
-        children[1] = new Node(new QBFState(state, new QBFAction(v, false)));
-    }
-
-    public boolean isClosed() {
-        return closed;
-    }
-
-    public boolean areAllChildrenClosed() {
-        if (children == null) {
-            return false;
-        } else if (closed) {
-            return true;
+        if (s.isDetermined() == Result.True) {
+            return +1;
         } else {
-            return stream(children).allMatch(Node::isClosed);
+            return -1;
         }
     }
 }

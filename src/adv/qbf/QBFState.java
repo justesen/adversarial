@@ -43,8 +43,12 @@ public class QBFState implements State {
         return quantifiers.getFirst().variable;
     }
 
-    boolean isOutermostQuantifierExistential() {
-        return !quantifiers.isEmpty() && quantifiers.getFirst().isExistential();
+    boolean isExistential() {
+        return quantifiers.getFirst().isExistential();
+    }
+
+    boolean isUniversal() {
+        return !quantifiers.getFirst().isExistential();
     }
 
     Result isDetermined() {
