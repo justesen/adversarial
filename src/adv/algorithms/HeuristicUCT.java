@@ -7,7 +7,7 @@ import adv.entities.State;
 import java.util.function.Function;
 
 public class HeuristicUCT extends UCT {
-    private Function<State, Integer> heuristic;
+    private final Function<State, Integer> heuristic;
 
     public HeuristicUCT(Game<State, Action> game, double c, long timeCap, Function<State, Integer> heuristic) {
         super(game, c, timeCap);

@@ -31,6 +31,14 @@ public class QBFState implements State {
         this.assignments.put(a.variable, a.value);
     }
 
+    QBFState(QBFState s, boolean value) {
+        this.quantifiers = new LinkedList<>(s.quantifiers);
+        Quantifier q = quantifiers.pollFirst();
+        this.clauses = new LinkedList<>(s.clauses);
+        this.assignments = new HashMap<>(s.assignments);
+        this.assignments.put(q.variable, value);
+    }
+
     int outermostVariable() {
         return quantifiers.getFirst().variable;
     }
@@ -53,14 +61,6 @@ public class QBFState implements State {
         }
 
         return allTrue ? Result.True : Result.Undetermined;
-    }
-
-    LinkedList<Quantifier> getQuantifiers() {
-        return new LinkedList<>(quantifiers);
-    }
-
-    List<Clause> getClauses() {
-        return new LinkedList<>(clauses);
     }
 
     @Override

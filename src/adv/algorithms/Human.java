@@ -19,7 +19,7 @@ public class Human implements Algorithm {
         List<Action> actions = game.actions(s);
 
         for (int i = 0; i < actions.size(); i++) {
-            System.out.printf("%2d. %s\n", i + 1, actions.get(i));
+            System.out.printf("%2d. %state\n", i + 1, actions.get(i));
         }
 
         System.out.print("\nChoose an action: ");
