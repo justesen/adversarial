@@ -111,4 +111,30 @@ public class QBFState implements State {
     public int hashCode() {
         return assignments != null ? assignments.hashCode() : 0;
     }
+
+    int trueClauses() {
+        int trueClauses = 0;
+
+        for (Clause c : clauses) {
+            if (c.isDetermined(assignments) == Result.True) {
+                trueClauses++;
+            }
+        }
+        return trueClauses;
+    }
+
+    int falseClauses() {
+        int falseClauses = 0;
+
+        for (Clause c : clauses) {
+            if (c.isDetermined(assignments) == Result.False) {
+                falseClauses++;
+            }
+        }
+        return falseClauses;
+    }
+
+    public int clauses() {
+        return clauses.size();
+    }
 }

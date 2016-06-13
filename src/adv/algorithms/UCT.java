@@ -12,25 +12,23 @@ import java.util.Map;
 abstract class UCT implements Algorithm {
     protected final Game<State, Action> game;
     private final double c;
-    private final long timeCap;
+    private final Timer timer;
     private final Map<State, Integer> visits;
     private final Map<State, Double> utilities;
 
     UCT(Game<State, Action> game, double c, long timeCap) {
         this.game = game;
         this.c = c;
-        this.timeCap = timeCap;
+        this.timer = new Timer(timeCap);
         this.visits = new HashMap<>();
         this.utilities = new HashMap<>();
     }
 
     @Override
     public Action nextMove(State s) {
-        Timer t = new Timer(timeCap);
+        timer.start();
 
-        t.start();
-
-        while (t.isTimeRemaining()) {
+        while (timer.isTimeRemaining()) {
             UCTRecurse(s);
         }
 

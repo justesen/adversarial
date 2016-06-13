@@ -21,7 +21,7 @@ public class Main {
                 game = new TicTacToe();
                 init = new TTTState();
             } else { // if (args[0].equals("qbf")) {
-                QBFState formula = QDIMACS.parse("instances/qbf/eval2012r2/adder-6-sat.qdimacs");
+                QBFState formula = QDIMACS.parse("instances/qbf/3_sat.qdimacs");
                 QDPLL qdpll = new QDPLL();
                 System.out.println("QDPLL: " + qdpll.evaluate(formula));
 
@@ -34,13 +34,14 @@ public class Main {
             Algorithm hmn = new Human((Game<State, Action>) game);
             Algorithm uct = new MonteCarloUCT((Game<State, Action>) game, Math.sqrt(2), 100);
 
-            playMatch((Game<State, Action>) game, init, uct, uct);
+            playMatch((Game<State, Action>) game, init, mm, uct);
         } else {
-            QBFState formula = QDIMACS.parse("instances/qbf/3_sat.qbf");
+//            QBFState formula = QDIMACS.parse("instances/qbf/3_sat.qdimacs");
+            QBFState formula = QDIMACS.parse("instances/qbf/eval2012r2/adder-6-sat.qdimacs");
+            UCTQBF uctqbf = new UCTQBF(Math.sqrt(2), 1000);
             QDPLL qdpll = new QDPLL();
-            UCTQBF uctqbf = new UCTQBF(Math.sqrt(2), -1);
 
-            System.out.printf("QDPLL: %s (explored %s nodes)\n", qdpll.evaluate(formula), qdpll.nodes);
+//            System.out.printf("QDPLL: %s (explored %s nodes)\n", qdpll.evaluate(formula), qdpll.nodes);
             System.out.printf("UCT:   %s (explored %s nodes)\n", uctqbf.evaluate(formula), uctqbf.nodes);
         }
     }

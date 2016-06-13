@@ -19,7 +19,7 @@ public class QDPLL {
 
         QBFState t = new QBFState(s, true);
 
-        if (!s.isExistential() && !evaluate(t)) {
+        if (s.isUniversal() && !evaluate(t)) {
             return false;
         }
 

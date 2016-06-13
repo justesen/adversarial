@@ -4,7 +4,6 @@ import adv.util.Timer;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Random;
 
 public class UCTQBF {
     private final double c;
@@ -94,15 +93,17 @@ public class UCTQBF {
         }
     }
 
-    private int estimatedUtility(QBFState s) {
-        while (s.isDetermined() == Result.Undetermined) {
-            s = new QBFState(s, (new Random()).nextBoolean());
-        }
+    private double estimatedUtility(QBFState s) {
+        return (s.trueClauses() - s.falseClauses()) / s.clauses();
 
-        if (s.isDetermined() == Result.True) {
-            return +1;
-        } else {
-            return -1;
-        }
+//        while (s.isDetermined() == Result.Undetermined) {
+//            s = new QBFState(s, (new Random()).nextBoolean());
+//        }
+//
+//        if (s.isDetermined() == Result.True) {
+//            return +1;
+//        } else {
+//            return -1;
+//        }
     }
 }
