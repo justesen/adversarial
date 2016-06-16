@@ -6,34 +6,34 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class QDIMACS {
-    public static QBFState parse(String path) throws IOException {
+public class Parser {
+    public static Formula parse(String path) throws IOException {
         BufferedReader in = new BufferedReader(new FileReader(path));
-        QBFState s = parse(in);
+        Formula s = parse(in);
         in.close();
 
         return s;
     }
 
-    private static QBFState parse(BufferedReader in) throws IOException {
+    private static Formula parse(BufferedReader in) throws IOException {
         String line;
         String[] elems;
 
-        // Parse comments
+        // Parser comments
         line = in.readLine();
 
         while (line.charAt(0) == 'c') {
             line = in.readLine();
         }
 
-        // Parse problem line
+        // Parser problem line
         elems = line.split("\\s+");
         assert elems[0].equals("p");
         assert elems[1].equals("cnf");
         int atomsCount = Integer.parseInt(elems[2]);
 //        int clausesCount = Integer.parseInt(elems[3]);
 
-        // Parse quantifier sets
+        // Parser quantifier sets
         line = in.readLine();
         LinkedList<Quantifier> quantifiers = new LinkedList<>();
         boolean[] variables = new boolean[atomsCount + 1];
@@ -57,7 +57,7 @@ public class QDIMACS {
             line = in.readLine();
         }
 
-        // Parse CNF matrix
+        // Parser CNF matrix
         List<Clause> clauses = new LinkedList<>();
 
         while (line != null) {
@@ -79,7 +79,7 @@ public class QDIMACS {
             line = in.readLine();
         }
 
-        QBFState state = new QBFState(quantifiers, clauses);
+        Formula state = new Formula(quantifiers, clauses);
         state.simplify();
 
         return state;

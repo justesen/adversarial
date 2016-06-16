@@ -6,17 +6,17 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
 
-public class UCTQBF {
+public class UCTQBF implements QBFAlgorithm {
     private final double c;
     private final Timer timer;
-    public int nodes;
+    private int nodes;
 
     public UCTQBF(double c, long timeCap) {
         this.c = c;
         this.timer = new Timer(timeCap);
     }
 
-    public UCTResult evaluate(QBFState s) {
+    public UCTResult evaluate(Formula s) {
         Node root = new Node(s);
         UCTResult r = null;
         nodes = 0;
@@ -29,6 +29,16 @@ public class UCTQBF {
         }
 
         return r;
+    }
+
+    @Override
+    public int generatedNodes() {
+        return nodes;
+    }
+
+    @Override
+    public String toString() {
+        return "UCTQBF";
     }
 
     private UCTResult recurse(Node node) {
@@ -97,11 +107,11 @@ public class UCTQBF {
         }
     }
 
-    private double estimatedUtility(QBFState s) {
+    private double estimatedUtility(Formula s) {
 //        return (s.trueClauses() - s.falseClauses()) / s.clauses();
 
         while (s.isDetermined() == Result.Undetermined) {
-            s = new QBFState(s, s.outermostVariable(), (new Random()).nextBoolean());
+            s = new Formula(s, (new Random()).nextBoolean());
         }
 
         if (s.isDetermined() == Result.True) {

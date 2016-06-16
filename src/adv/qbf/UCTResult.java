@@ -1,6 +1,6 @@
 package adv.qbf;
 
-class UCTResult {
+public class UCTResult {
     private final Result value;
     private final double utility;
 

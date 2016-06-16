@@ -1,13 +1,13 @@
 package adv.qbf;
 
 class Node {
-    public final QBFState state;
+    public final Formula state;
     private int visits;
     private double Q;
     private Node[] children;
     private Result mark;
 
-    Node(QBFState state) {
+    Node(Formula state) {
         this.state = state;
         this.visits = 0;
         this.Q = 0;
@@ -19,10 +19,9 @@ class Node {
     }
 
     void addChildren() {
-        int v = state.outermostVariable();
         children = new Node[2];
-        children[0] = new Node(new QBFState(state, new QBFAction(v, true)));
-        children[1] = new Node(new QBFState(state, new QBFAction(v, false)));
+        children[0] = new Node(new Formula(state, true));
+        children[1] = new Node(new Formula(state, false));
     }
 
     void mark(boolean mark) {

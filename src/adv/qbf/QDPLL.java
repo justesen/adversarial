@@ -1,15 +1,25 @@
 package adv.qbf;
 
-public class QDPLL {
-    public int nodes;
+public class QDPLL implements QBFAlgorithm {
+    private int nodes;
 
-    public boolean evaluate(QBFState s) {
+    public UCTResult evaluate(Formula s) {
         nodes = 0;
 
-        return recurse(s);
+        return new UCTResult(recurse(s));
     }
 
-    private boolean recurse(QBFState s) {
+    @Override
+    public int generatedNodes() {
+        return nodes;
+    }
+
+    @Override
+    public String toString() {
+        return "QDPLL";
+    }
+
+    private boolean recurse(Formula s) {
         nodes++;
 
         s.simplify();
@@ -21,8 +31,7 @@ public class QDPLL {
                 return false;
         }
 
-        int variable = s.outermostVariable();
-        QBFState t = new QBFState(s, variable, true);
+        Formula t = new Formula(s, true);
 
         if (s.isUniversal() && !recurse(t)) {
             return false;
@@ -32,6 +41,6 @@ public class QDPLL {
             return true;
         }
 
-        return recurse(new QBFState(s, variable, false));
+        return recurse(new Formula(s, false));
     }
 }

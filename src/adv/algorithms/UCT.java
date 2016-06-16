@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 abstract class UCT implements Algorithm {
-    protected final Game<State, Action> game;
+    final Game<State, Action> game;
     private final double c;
     private final Timer timer;
     private final Map<State, Integer> visits;

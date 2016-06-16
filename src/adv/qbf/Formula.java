@@ -1,18 +1,17 @@
 package adv.qbf;
 
-import adv.entities.State;
 import adv.util.Pair;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class QBFState implements State {
-    private LinkedList<Quantifier> quantifiers;
+public class Formula {
+    private final LinkedList<Quantifier> quantifiers;
+    private final Map<Integer, Boolean> assignments;
+    private final Set<Integer> unassignedVariables;
     private List<Clause> clauses;
-    private Map<Integer, Boolean> assignments;
-    private Set<Integer> unassignedVariables;
 
-    QBFState(LinkedList<Quantifier> quantifiers, List<Clause> clauses) {
+    Formula(LinkedList<Quantifier> quantifiers, List<Clause> clauses) {
         this.quantifiers = new LinkedList<>(quantifiers);
         this.clauses = clauses;
         this.assignments = new HashMap<>();
@@ -23,11 +22,7 @@ public class QBFState implements State {
                 .collect(Collectors.toList()));
     }
 
-    QBFState(QBFState s, int variable, boolean value) {
-        if (s.quantifiers.getFirst().variable != variable) {
-            throw new IllegalArgumentException("Variable " + variable + " should be in outermost quantifier set");
-        }
-
+    Formula(Formula s, boolean value) {
         this.quantifiers = new LinkedList<>(s.quantifiers);
         this.clauses = new LinkedList<>();
         this.clauses.addAll(s.clauses.stream()
@@ -35,11 +30,7 @@ public class QBFState implements State {
                 .collect(Collectors.toList()));
         this.assignments = new HashMap<>(s.assignments);
         this.unassignedVariables = new HashSet<>(s.unassignedVariables);
-        assign(variable, value);
-    }
-
-    QBFState(QBFState s, QBFAction a) {
-        this(s, a.variable, a.value);
+        assign(outermostVariable(), value);
     }
 
     private void assign(int variable, boolean value) {
@@ -92,7 +83,7 @@ public class QBFState implements State {
         return allTrue ? Result.True : Result.Undetermined;
     }
 
-    int outermostVariable() {
+    private int outermostVariable() {
         return quantifiers.getFirst().variable;
     }
 
@@ -207,7 +198,7 @@ public class QBFState implements State {
             return false;
         }
 
-        QBFState s = (QBFState) o;
+        Formula s = (Formula) o;
 
         return assignments != null ? assignments.equals(s.assignments) : s.assignments == null;
     }
