@@ -2,8 +2,8 @@ package adv.qbf;
 
 import adv.util.Timer;
 
-import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Random;
 
 public class UCTQBF {
     private final double c;
@@ -31,6 +31,7 @@ public class UCTQBF {
 
     private UCTResult UCTRecurse(Node node) {
         UCTResult r = null;
+        node.state.simplify();
 
         if (node.isUnvisited()) {
             switch (node.state.isDetermined()) {
@@ -79,13 +80,13 @@ public class UCTQBF {
 
     private Node selectChild(Node node) {
         if (node.state.isExistential()) {
-            return Arrays.stream(node.children())
+            return node.children().stream()
                     .filter(child -> !child.isMarked())
                     .max(Comparator.comparing(child ->
                             child.utility() + c * Math.sqrt(Math.log(node.visits()) / child.visits())))
                     .orElse(null);
         } else {
-            return Arrays.stream(node.children())
+            return node.children().stream()
                     .filter(child -> !child.isMarked())
                     .min(Comparator.comparing(child ->
                             child.utility() - c * Math.sqrt(Math.log(node.visits()) / child.visits())))
@@ -94,16 +95,17 @@ public class UCTQBF {
     }
 
     private double estimatedUtility(QBFState s) {
-        return (s.trueClauses() - s.falseClauses()) / s.clauses();
+//        return (s.trueClauses() - s.falseClauses()) / s.clauses();
 
-//        while (s.isDetermined() == Result.Undetermined) {
-//            s = new QBFState(s, (new Random()).nextBoolean());
-//        }
-//
-//        if (s.isDetermined() == Result.True) {
-//            return +1;
-//        } else {
-//            return -1;
-//        }
+        while (s.isDetermined() == Result.Undetermined) {
+            int variable = s.outermostQuantifierSet().stream().findAny().get();
+            s = new QBFState(s, variable, (new Random()).nextBoolean());
+        }
+
+        if (s.isDetermined() == Result.True) {
+            return +1;
+        } else {
+            return -1;
+        }
     }
 }

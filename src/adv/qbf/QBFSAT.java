@@ -9,10 +9,11 @@ public class QBFSAT implements Game<QBFState, QBFAction> {
     @Override
     public List<QBFAction> actions(QBFState s) {
         List<QBFAction> actions = new LinkedList<>();
-        int v = s.outermostVariable();
 
-        actions.add(new QBFAction(v, true));
-        actions.add(new QBFAction(v, false));
+        for (int v : s.outermostQuantifierSet()) {
+            actions.add(new QBFAction(v, true));
+            actions.add(new QBFAction(v, false));
+        }
 
         return actions;
     }

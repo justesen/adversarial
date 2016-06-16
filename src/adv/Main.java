@@ -36,12 +36,12 @@ public class Main {
 
             playMatch((Game<State, Action>) game, init, mm, uct);
         } else {
-//            QBFState formula = QDIMACS.parse("instances/qbf/3_sat.qdimacs");
-            QBFState formula = QDIMACS.parse("instances/qbf/eval2012r2/adder-6-sat.qdimacs");
-            UCTQBF uctqbf = new UCTQBF(Math.sqrt(2), 1000);
+//            QBFState formula = QDIMACS.parse("instances/qbf/4_unsat.qdimacs");
+            QBFState formula = QDIMACS.parse("instances/qbf/preliminary2006/Adder2-2-c.qdimacs");
+            UCTQBF uctqbf = new UCTQBF(Math.sqrt(2), 4000);
             QDPLL qdpll = new QDPLL();
 
-//            System.out.printf("QDPLL: %s (explored %s nodes)\n", qdpll.evaluate(formula), qdpll.nodes);
+            System.out.printf("QDPLL: %s (explored %s nodes)\n", qdpll.evaluate(formula), qdpll.nodes);
             System.out.printf("UCT:   %s (explored %s nodes)\n", uctqbf.evaluate(formula), uctqbf.nodes);
         }
     }

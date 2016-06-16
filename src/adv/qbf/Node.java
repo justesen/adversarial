@@ -1,12 +1,13 @@
 package adv.qbf;
 
-import static java.util.Arrays.stream;
+import java.util.ArrayList;
+import java.util.List;
 
 class Node {
     public final QBFState state;
     private int visits;
     private double Q;
-    private Node[] children;
+    private List<Node> children;
     private Result mark;
 
     Node(QBFState state) {
@@ -16,15 +17,17 @@ class Node {
         this.mark = Result.Undetermined;
     }
 
-    Node[] children() {
+    List<Node> children() {
         return children;
     }
 
     void addChildren() {
-        int v = state.outermostVariable();
-        children = new Node[2];
-        children[0] = new Node(new QBFState(state, new QBFAction(v, true)));
-        children[1] = new Node(new QBFState(state, new QBFAction(v, false)));
+        children = new ArrayList<>(2 * state.outermostQuantifierSet().size());
+
+        for (int v : state.outermostQuantifierSet()) {
+            children.add(new Node(new QBFState(state, v, true)));
+            children.add(new Node(new QBFState(state, v, false)));
+        }
     }
 
     void mark(boolean mark) {
@@ -36,11 +39,11 @@ class Node {
     }
 
     boolean allChildrenAreFalse() {
-        return stream(children).allMatch(c -> c.mark == Result.False);
+        return children.stream().allMatch(c -> c.mark == Result.False);
     }
 
     boolean allChildrenAreTrue() {
-        return stream(children).allMatch(c -> c.mark == Result.True);
+        return children.stream().allMatch(c -> c.mark == Result.True);
     }
 
     boolean isUnvisited() {

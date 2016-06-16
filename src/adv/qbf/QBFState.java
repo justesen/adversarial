@@ -1,54 +1,54 @@
 package adv.qbf;
 
 import adv.entities.State;
+import adv.util.Pair;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class QBFState implements State {
-    private LinkedList<Quantifier> quantifiers;
+    private LinkedList<QuantifierSet> quantifierSets;
     private List<Clause> clauses;
     private Map<Integer, Boolean> assignments;
+    private Set<Integer> unassignedVariables;
 
-    QBFState(LinkedList<Quantifier> quantifiers, List<Clause> clauses) {
-        this.quantifiers = quantifiers;
+    QBFState(LinkedList<QuantifierSet> quantifierSets, List<Clause> clauses) {
+        this.quantifierSets = quantifierSets;
         this.clauses = clauses;
         this.assignments = new HashMap<>();
+        this.unassignedVariables = new HashSet<>();
+
+        for (QuantifierSet q : quantifierSets) {
+            unassignedVariables.addAll(q.variables());
+        }
+    }
+
+    QBFState(QBFState s, int variable, boolean value) {
+        if (!s.quantifierSets.getFirst().contains(variable)) {
+            throw new IllegalArgumentException("Variable " + variable + " should be in outermost quantifier set");
+        }
+
+        this.quantifierSets = new LinkedList<>();
+        this.quantifierSets.addAll(s.quantifierSets.stream()
+                .map(q -> new QuantifierSet(q.isExistential(), q.variables()))
+                .collect(Collectors.toList()));
+
+        this.clauses = s.clauses;
+        this.assignments = new HashMap<>(s.assignments);
+        this.unassignedVariables = new HashSet<>(s.unassignedVariables);
+        assign(variable, value);
     }
 
     QBFState(QBFState s, QBFAction a) {
-        // Action should be variable of outermost quantifier
-        if (s.quantifiers.getFirst().variable != a.variable) {
-            throw new IllegalArgumentException();
-        }
-
-        this.quantifiers = new LinkedList<>(s.quantifiers);
-        this.quantifiers.pollFirst();
-        this.clauses = new LinkedList<>(s.clauses);
-        this.assignments = new HashMap<>(s.assignments);
-        this.assignments.put(a.variable, a.value);
-    }
-
-    QBFState(QBFState s, boolean value) {
-        this.quantifiers = new LinkedList<>(s.quantifiers);
-        Quantifier q = quantifiers.pollFirst();
-        this.clauses = new LinkedList<>(s.clauses);
-        this.assignments = new HashMap<>(s.assignments);
-        this.assignments.put(q.variable, value);
-    }
-
-    int outermostVariable() {
-        return quantifiers.getFirst().variable;
+        this(s, a.variable, a.value);
     }
 
     boolean isExistential() {
-        return quantifiers.getFirst().isExistential();
+        return quantifierSets.getFirst().isExistential();
     }
 
     boolean isUniversal() {
-        return !quantifiers.getFirst().isExistential();
+        return !quantifierSets.getFirst().isExistential();
     }
 
     Result isDetermined() {
@@ -71,10 +71,12 @@ public class QBFState implements State {
     public String toString() {
         StringBuilder s = new StringBuilder();
 
-        for (Quantifier q : quantifiers) {
-            s.append(q.isExistential() ? "\u2203" : "\u2200");
-            s.append(q.variable);
-            s.append(".");
+        for (QuantifierSet q : quantifierSets) {
+            for (int v : q.variables()) {
+                s.append(q.isExistential() ? "\u2203" : "\u2200");
+                s.append(v);
+                s.append(".");
+            }
         }
 
         if (!clauses.isEmpty()) {
@@ -112,29 +114,94 @@ public class QBFState implements State {
         return assignments != null ? assignments.hashCode() : 0;
     }
 
-    int trueClauses() {
-        int trueClauses = 0;
-
-        for (Clause c : clauses) {
-            if (c.isDetermined(assignments) == Result.True) {
-                trueClauses++;
-            }
-        }
-        return trueClauses;
+    Collection<Integer> outermostQuantifierSet() {
+        return quantifierSets.getFirst().variables();
     }
 
-    int falseClauses() {
-        int falseClauses = 0;
+    void simplify() {
+        // Find monotone literals (pure symbols)
+        Set<Integer> positives = new HashSet<>(unassignedVariables);
+        Set<Integer> negatives = new HashSet<>(unassignedVariables);
 
-        for (Clause c : clauses) {
-            if (c.isDetermined(assignments) == Result.False) {
-                falseClauses++;
+        clauses.stream()
+                .filter(c -> c.isDetermined(assignments) == Result.Undetermined)
+                .forEach(c -> {
+                    for (int l : c.literals) {
+                        if (l < 0) {
+                            positives.remove(-l);
+                        } else {
+                            negatives.remove(l);
+                        }
+                    }
+                });
+
+        for (int var : positives) {
+            if (isExistential(var)) {
+                assign(var, true);
+            } else {
+                assign(var, false);
             }
         }
-        return falseClauses;
+
+        for (int var : negatives) {
+            if (isExistential(var)) {
+                assign(var, false);
+            } else {
+                assign(var, true);
+            }
+        }
+
+        // Unit propagation
+        boolean foundUnitClause = true;
+
+        while (foundUnitClause) {
+            foundUnitClause = false;
+
+            for (Clause c : clauses) {
+                if (c.isDetermined(assignments) == Result.Undetermined) {
+                    LinkedList<Pair<Integer, Boolean>> unassignedVariables = c.unassignedVariables(assignments);
+
+                    if (unassignedVariables.size() == 1) {
+                        foundUnitClause = true;
+                        int var = unassignedVariables.getFirst().getFirst();
+                        boolean val = unassignedVariables.getFirst().getSecond();
+
+                        if (isExistential(var)) {
+                            assign(var, val);
+                        } else {
+                            clauses = new LinkedList<>();
+                            clauses.add(new Clause(new LinkedList<>()));
+                            return;
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    public int clauses() {
-        return clauses.size();
+    private boolean isExistential(int var) {
+        for (QuantifierSet q : quantifierSets) {
+            if (q.contains(var)) {
+                return q.isExistential();
+            }
+        }
+
+        // Happens only if variable does not occur in matrix, i.e., it has already been removed as pure symbol
+        return false;
+    }
+
+    private void assign(int variable, boolean value) {
+        assignments.put(variable, value);
+        unassignedVariables.remove(variable);
+
+        for (QuantifierSet q : quantifierSets) {
+            if (q.remove(variable)) {
+                break;
+            }
+        }
+
+        quantifierSets = quantifierSets.stream()
+                .filter(q -> !q.isEmpty())
+                .collect(Collectors.toCollection(LinkedList<QuantifierSet>::new));
     }
 }

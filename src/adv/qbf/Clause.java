@@ -1,11 +1,14 @@
 package adv.qbf;
 
+import adv.util.Pair;
+
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 class Clause {
-    private final List<Integer> literals;
+    final List<Integer> literals;
 
     Clause(List<Integer> literals) {
         this.literals = literals;
@@ -37,10 +40,6 @@ class Clause {
         return allFalse ? Result.False : Result.Undetermined;
     }
 
-    boolean isEmpty() {
-        return literals.isEmpty();
-    }
-
     String toString(Map<Integer, Boolean> assignments) {
         switch (isDetermined(assignments)) {
             case True:
@@ -69,5 +68,12 @@ class Clause {
         }
 
         return s.toString();
+    }
+
+    LinkedList<Pair<Integer, Boolean>> unassignedVariables(Map<Integer, Boolean> assignments) {
+        return literals.stream()
+                .filter(l -> !assignments.containsKey(Math.abs(l)))
+                .map(l -> new Pair<>(Math.abs(l), l > 0))
+                .collect(Collectors.toCollection(LinkedList::new));
     }
 }

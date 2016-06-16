@@ -10,6 +10,8 @@ public class QDPLL {
     public boolean evaluate(QBFState s) {
         nodes++;
 
+        s.simplify();
+
         switch (s.isDetermined()) {
             case True:
                 return true;
@@ -17,7 +19,8 @@ public class QDPLL {
                 return false;
         }
 
-        QBFState t = new QBFState(s, true);
+        int variable = s.outermostQuantifierSet().stream().findAny().get();
+        QBFState t = new QBFState(s, variable, true);
 
         if (s.isUniversal() && !evaluate(t)) {
             return false;
@@ -27,6 +30,6 @@ public class QDPLL {
             return true;
         }
 
-        return evaluate(new QBFState(s, false));
+        return evaluate(new QBFState(s, variable, false));
     }
 }
