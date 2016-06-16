@@ -15,14 +15,9 @@ import java.util.LinkedList;
 @SuppressWarnings({"UnusedAssignment", "unchecked"})
 public class Main {
     public static void main(String[] args) throws IOException {
-        if (args.length > 0) {
-            Game<? extends State, ? extends Action> game = null;
-            State init = null;
-
-            if (args[0].equals("ttt")) {
-                game = new TicTacToe();
-                init = new TTTState();
-            }
+        if (args.length > 0 && args[0].equals("ttt")) {
+            Game<? extends State, ? extends Action> game = new TicTacToe();
+            State init = new TTTState();
 
             Algorithm mm = new MiniMax((Game<State, Action>) game);
             Algorithm rnd = new Random((Game<State, Action>) game);
@@ -31,17 +26,28 @@ public class Main {
             Algorithm uct2 = new HeuristicUCT((Game<State, Action>) game, Math.sqrt(2), 100, (s -> 0));
 
             playMatch((Game<State, Action>) game, init, mm, uct1);
+        } else if (args.length > 0 && args[0].equals("qdpll")) {
+            QBFAlgorithm qdpll = new QDPLL();
+            evaluateFormula(qdpll, QDIMACS.parse(args[1]));
+        } else if (args.length > 0 && args[0].equals("uct")) {
+            QBFAlgorithm uct = new UCTQBF(0, 5, -1);
+            evaluateFormula(uct, QDIMACS.parse(args[1]));
         } else {
             Collection<Formula> formulas = new LinkedList<>();
-            formulas.add(Parser.parse("instances/qbf/3_sat.qdimacs"));
-            formulas.add(Parser.parse("instances/qbf/4_unsat.qdimacs"));
-            formulas.add(Parser.parse("instances/qbf/preliminary2006/Adder2-2-c.qdimacs"));
-            formulas.add(Parser.parse("instances/qbf/preliminary2006/Adder2-2-s.qdimacs"));
-//            formulas.add(Parser.parse("instances/qbf/preliminary2006/adder-2-unsat.qdimacs"));
-            formulas.add(Parser.parse("instances/qbf/preliminary2006/adder-2-sat.qdimacs"));
+            formulas.add(QDIMACS.generate(45, 130, 5));
+            formulas.add(QDIMACS.generate(45, 130, 5));
+            formulas.add(QDIMACS.generate(45, 130, 5));
+            formulas.add(QDIMACS.parse("instances/qbf/3_sat.qdimacs"));
+            formulas.add(QDIMACS.parse("instances/qbf/4_unsat.qdimacs"));
+            formulas.add(QDIMACS.parse("instances/qbf/5_sat.qdimacs"));
+            formulas.add(QDIMACS.parse("instances/qbf/preliminary2006/Adder2-2-c.qdimacs"));
+            formulas.add(QDIMACS.parse("instances/qbf/preliminary2006/Adder2-2-s.qdimacs"));
+//            formulas.add(QDIMACS.parse("instances/qbf/preliminary2006/adder-2-unsat.qdimacs"));
+            formulas.add(QDIMACS.parse("instances/qbf/preliminary2006/adder-2-sat.qdimacs"));
+//            formulas.add(QDIMACS.parse("instances/qbf/preliminary2006/counter_2.qdimacs"));
 
             QBFAlgorithm qdpll = new QDPLL();
-            QBFAlgorithm uct = new UCTQBF(Math.sqrt(2), 20000);
+            QBFAlgorithm uct = new UCTQBF(0, 5, -1);
 
             evaluateFormulas(qdpll, formulas);
             System.out.println();
@@ -49,27 +55,31 @@ public class Main {
         }
     }
 
-    private static void evaluateFormulas(QBFAlgorithm alg, Collection<Formula> formulas) {
+    private static void evaluateFormula(QBFAlgorithm alg, Formula formula) {
         UCTResult result;
+        long startTime, endTime;
+
+        startTime = System.currentTimeMillis();
+        result = alg.evaluate(formula);
+        endTime = System.currentTimeMillis();
+
+        System.out.printf("%s:\t%s\t(explored %s nodes in %s ms)\n", alg, result, alg.generatedNodes(), (endTime - startTime));
+    }
+
+    private static void evaluateFormulas(QBFAlgorithm alg, Collection<Formula> formulas) {
         int nodesTotal = 0;
         long startTime, endTime;
-        long startTimeTotal, endTimeTotal;
 
-        startTimeTotal = System.currentTimeMillis();
+        startTime = System.currentTimeMillis();
 
         for (Formula f : formulas) {
-            startTime = System.currentTimeMillis();
-            result = alg.evaluate(f);
-            endTime = System.currentTimeMillis();
-
+            evaluateFormula(alg, f);
             nodesTotal += alg.generatedNodes();
-
-            System.out.printf("%s:\t%s\t(explored %s nodes in %s ms)\n", alg, result, alg.generatedNodes(), (endTime - startTime));
         }
 
-        endTimeTotal = System.currentTimeMillis();
+        endTime = System.currentTimeMillis();
 
-        System.out.printf("Summary: %s explored %s nodes in %s ms\n", alg, nodesTotal, (endTimeTotal - startTimeTotal));
+        System.out.printf("Summary: %s explored %s nodes in %s ms\n", alg, nodesTotal, (endTime - startTime));
     }
 
     private static void playMatch(Game<State, Action> g, State s, Algorithm p1, Algorithm p2) {

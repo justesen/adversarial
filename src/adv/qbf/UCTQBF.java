@@ -9,10 +9,12 @@ import java.util.Random;
 public class UCTQBF implements QBFAlgorithm {
     private final double c;
     private final Timer timer;
+    private final int numberOfPlayouts;
     private int nodes;
 
-    public UCTQBF(double c, long timeCap) {
+    public UCTQBF(double c, int numberOfPlayouts, long timeCap) {
         this.c = c;
+        this.numberOfPlayouts = numberOfPlayouts;
         this.timer = new Timer(timeCap);
     }
 
@@ -108,16 +110,24 @@ public class UCTQBF implements QBFAlgorithm {
     }
 
     private double estimatedUtility(Formula s) {
-//        return (s.trueClauses() - s.falseClauses()) / s.clauses();
+        double estimate = 0.0;
+        Formula t;
 
-        while (s.isDetermined() == Result.Undetermined) {
-            s = new Formula(s, (new Random()).nextBoolean());
+        for (int i = 0; i < numberOfPlayouts; i++) {
+            t = new Formula(s);
+
+            while (t.isDetermined() == Result.Undetermined) {
+                t = new Formula(t, (new Random()).nextBoolean());
+                t.simplify();
+            }
+
+            if (t.isDetermined() == Result.True) {
+                estimate += 1.0;
+            } else {
+                estimate += (-1.0 + t.trueClausesCount() / t.clausesCount());
+            }
         }
 
-        if (s.isDetermined() == Result.True) {
-            return +1;
-        } else {
-            return -1;
-        }
+        return estimate / numberOfPlayouts;
     }
 }

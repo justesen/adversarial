@@ -33,6 +33,32 @@ public class Formula {
         assign(outermostVariable(), value);
     }
 
+    Formula(Formula s) {
+        this.quantifiers = new LinkedList<>(s.quantifiers);
+        this.clauses = new LinkedList<>();
+        this.clauses.addAll(s.clauses.stream()
+                .map(Clause::new)
+                .collect(Collectors.toList()));
+        this.assignments = new HashMap<>(s.assignments);
+        this.unassignedVariables = new HashSet<>(s.unassignedVariables);
+    }
+
+    int trueClausesCount() {
+        int trueClauses = 0;
+
+        for (Clause c : clauses) {
+            if (c.isDetermined(assignments) == Result.True) {
+                trueClauses++;
+            }
+        }
+
+        return trueClauses;
+    }
+
+    int clausesCount() {
+        return clauses.size();
+    }
+
     private void assign(int variable, boolean value) {
         assignments.put(variable, value);
         unassignedVariables.remove(variable);

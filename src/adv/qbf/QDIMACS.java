@@ -5,8 +5,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
-public class Parser {
+public class QDIMACS {
     public static Formula parse(String path) throws IOException {
         BufferedReader in = new BufferedReader(new FileReader(path));
         Formula s = parse(in);
@@ -19,21 +20,21 @@ public class Parser {
         String line;
         String[] elems;
 
-        // Parser comments
+        // Parse comments
         line = in.readLine();
 
         while (line.charAt(0) == 'c') {
             line = in.readLine();
         }
 
-        // Parser problem line
+        // Parse problem line
         elems = line.split("\\s+");
         assert elems[0].equals("p");
         assert elems[1].equals("cnf");
         int atomsCount = Integer.parseInt(elems[2]);
 //        int clausesCount = Integer.parseInt(elems[3]);
 
-        // Parser quantifier sets
+        // Parse quantifier sets
         line = in.readLine();
         LinkedList<Quantifier> quantifiers = new LinkedList<>();
         boolean[] variables = new boolean[atomsCount + 1];
@@ -57,7 +58,7 @@ public class Parser {
             line = in.readLine();
         }
 
-        // Parser CNF matrix
+        // Parse CNF matrix
         List<Clause> clauses = new LinkedList<>();
 
         while (line != null) {
@@ -79,9 +80,37 @@ public class Parser {
             line = in.readLine();
         }
 
-        Formula state = new Formula(quantifiers, clauses);
-        state.simplify();
+        Formula f = new Formula(quantifiers, clauses);
+        f.simplify();
 
-        return state;
+        return f;
+    }
+
+    public static Formula generate(int atomsCount, int clausesCount, int literalsPerClause) {
+        LinkedList<Quantifier> quantifiers = new LinkedList<>();
+        Random rnd = new Random();
+
+        for (int var = 1; var <= atomsCount; var++) {
+            quantifiers.add(new Quantifier(rnd.nextBoolean(), var));
+        }
+
+        List<Clause> clauses = new LinkedList<>();
+
+        for (int i = 0; i < clausesCount; i++) {
+            List<Integer> literals = new LinkedList<>();
+
+            for (int j = 0; j < literalsPerClause; j++) {
+                int var = rnd.nextInt(atomsCount) + 1;
+                var = rnd.nextBoolean() ? var : -var;
+                literals.add(var);
+            }
+
+            clauses.add(new Clause(literals));
+        }
+
+        Formula f = new Formula(quantifiers, clauses);
+        f.simplify();
+
+        return f;
     }
 }
