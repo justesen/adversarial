@@ -11,7 +11,11 @@ class Clause {
     final List<Integer> literals;
 
     Clause(List<Integer> literals) {
-        this.literals = literals;
+        this.literals = new LinkedList<>(literals);
+    }
+
+    Clause(Clause clause) {
+        this(clause.literals);
     }
 
     Result isDetermined(Map<Integer, Boolean> assignments) {

@@ -4,7 +4,7 @@ public class QDPLL {
     public int nodes;
 
     public QDPLL() {
-        nodes = 0;
+        this.nodes = 0;
     }
 
     public boolean evaluate(QBFState s) {

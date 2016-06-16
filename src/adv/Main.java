@@ -4,7 +4,10 @@ import adv.algorithms.*;
 import adv.entities.Action;
 import adv.entities.Game;
 import adv.entities.State;
-import adv.qbf.*;
+import adv.qbf.QBFSAT;
+import adv.qbf.QBFState;
+import adv.qbf.QDIMACS;
+import adv.qbf.QDPLL;
 import adv.tictactoe.TTTState;
 import adv.tictactoe.TicTacToe;
 
@@ -37,12 +40,20 @@ public class Main {
             playMatch((Game<State, Action>) game, init, mm, uct);
         } else {
 //            QBFState formula = QDIMACS.parse("instances/qbf/4_unsat.qdimacs");
-            QBFState formula = QDIMACS.parse("instances/qbf/preliminary2006/Adder2-2-c.qdimacs");
-            UCTQBF uctqbf = new UCTQBF(Math.sqrt(2), 4000);
+            QBFState formula1 = QDIMACS.parse("instances/qbf/preliminary2006/Adder2-2-c.qdimacs");
+            QBFState formula2 = QDIMACS.parse("instances/qbf/preliminary2006/Adder2-2-s.qdimacs");
+            QBFState formula3 = QDIMACS.parse("instances/qbf/preliminary2006/adder-2-unsat.qdimacs");
+            QBFState formula4 = QDIMACS.parse("instances/qbf/preliminary2006/adder-2-sat.qdimacs");
             QDPLL qdpll = new QDPLL();
+            long startTime = System.currentTimeMillis();
+            System.out.printf("QDPLL: %s (explored %s nodes)\n", qdpll.evaluate(formula1), qdpll.nodes);
+            System.out.printf("QDPLL: %s (explored %s nodes)\n", qdpll.evaluate(formula2), qdpll.nodes);
+            System.out.printf("QDPLL: %s (explored %s nodes)\n", qdpll.evaluate(formula3), qdpll.nodes);
+            System.out.printf("QDPLL: %s (explored %s nodes)\n", qdpll.evaluate(formula4), qdpll.nodes);
+            long endTime = System.currentTimeMillis();
 
-            System.out.printf("QDPLL: %s (explored %s nodes)\n", qdpll.evaluate(formula), qdpll.nodes);
-            System.out.printf("UCT:   %s (explored %s nodes)\n", uctqbf.evaluate(formula), uctqbf.nodes);
+            System.out.printf("QDPLL explored %s nodes in %s)\n", qdpll.nodes, (endTime - startTime));
+//            System.out.printf("UCT:   %s (explored %s nodes)\n", uctqbf.evaluate(formula), uctqbf.nodes);
         }
     }
 

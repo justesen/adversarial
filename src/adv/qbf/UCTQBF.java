@@ -13,6 +13,7 @@ public class UCTQBF {
     public UCTQBF(double c, long timeCap) {
         this.c = c;
         this.timer = new Timer(timeCap);
+        this.nodes = 0;
     }
 
     public UCTResult evaluate(QBFState s) {
@@ -31,9 +32,10 @@ public class UCTQBF {
 
     private UCTResult UCTRecurse(Node node) {
         UCTResult r = null;
-        node.state.simplify();
 
         if (node.isUnvisited()) {
+            node.state.simplify();
+
             switch (node.state.isDetermined()) {
                 case True:
                     node.mark(true);

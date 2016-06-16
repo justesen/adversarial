@@ -22,23 +22,23 @@ class QuantifierSet {
         return isExistential;
     }
 
-    public void add(int v) {
+    void add(int v) {
         variables.add(v);
     }
 
-    public Collection<Integer> variables() {
+    Collection<Integer> variables() {
         return variables;
     }
 
-    public boolean isEmpty() {
+    boolean isEmpty() {
         return variables.isEmpty();
     }
 
-    public boolean remove(int variable) {
+    boolean remove(int variable) {
         return variables.remove(variable);
     }
 
-    public boolean contains(int variable) {
+    boolean contains(int variable) {
         return variables.contains(variable);
     }
 }
