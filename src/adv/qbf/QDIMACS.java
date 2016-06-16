@@ -35,13 +35,12 @@ public class QDIMACS {
 
         // Parse quantifier sets
         line = in.readLine();
-        LinkedList<QuantifierSet> quantifierSets = new LinkedList<>();
+        LinkedList<Quantifier> quantifiers = new LinkedList<>();
         boolean[] variables = new boolean[atomsCount + 1];
 
         while (line.charAt(0) == 'e' || line.charAt(0) == 'a') {
             elems = line.split("\\s+");
             boolean isExistential = elems[0].equals("e");
-            QuantifierSet q = new QuantifierSet(isExistential);
 
             for (int i = 1; i < elems.length - 1; i++) {
                 int v = Integer.parseInt(elems[i]);
@@ -52,10 +51,8 @@ public class QDIMACS {
                     throw new IllegalArgumentException(v + " is already quantified");
                 }
 
-                q.add(v);
+                quantifiers.add(new Quantifier(isExistential, v));
             }
-
-            quantifierSets.add(q);
 
             line = in.readLine();
         }
@@ -71,7 +68,7 @@ public class QDIMACS {
                 int v = Integer.parseInt(elems[i]);
 
                 if (!variables[Math.abs(v)]) {
-                    quantifierSets.addFirst(new QuantifierSet(true));
+                    quantifiers.addFirst(new Quantifier(true, Math.abs(v)));
                     variables[Math.abs(v)] = true;
                 }
 
@@ -82,6 +79,9 @@ public class QDIMACS {
             line = in.readLine();
         }
 
-        return new QBFState(quantifierSets, clauses);
+        QBFState state = new QBFState(quantifiers, clauses);
+        state.simplify();
+
+        return state;
     }
 }

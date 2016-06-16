@@ -2,6 +2,7 @@ package adv.qbf;
 
 import adv.util.Timer;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
 
@@ -13,24 +14,24 @@ public class UCTQBF {
     public UCTQBF(double c, long timeCap) {
         this.c = c;
         this.timer = new Timer(timeCap);
-        this.nodes = 0;
     }
 
     public UCTResult evaluate(QBFState s) {
         Node root = new Node(s);
         UCTResult r = null;
+        nodes = 0;
 
         timer.start();
 
         while (r == null || (r.isUndetermined() && timer.isTimeRemaining())) {
             nodes++;
-            r = UCTRecurse(root);
+            r = recurse(root);
         }
 
         return r;
     }
 
-    private UCTResult UCTRecurse(Node node) {
+    private UCTResult recurse(Node node) {
         UCTResult r = null;
 
         if (node.isUnvisited()) {
@@ -49,7 +50,7 @@ public class UCTQBF {
             }
         } else {
             Node child = selectChild(node);
-            UCTResult s = UCTRecurse(child);
+            UCTResult s = recurse(child);
 
             if (node.state.isExistential() && s.isTrue()) {
                 node.mark(true);
@@ -82,13 +83,13 @@ public class UCTQBF {
 
     private Node selectChild(Node node) {
         if (node.state.isExistential()) {
-            return node.children().stream()
+            return Arrays.stream(node.children())
                     .filter(child -> !child.isMarked())
                     .max(Comparator.comparing(child ->
                             child.utility() + c * Math.sqrt(Math.log(node.visits()) / child.visits())))
                     .orElse(null);
         } else {
-            return node.children().stream()
+            return Arrays.stream(node.children())
                     .filter(child -> !child.isMarked())
                     .min(Comparator.comparing(child ->
                             child.utility() - c * Math.sqrt(Math.log(node.visits()) / child.visits())))
@@ -100,8 +101,7 @@ public class UCTQBF {
 //        return (s.trueClauses() - s.falseClauses()) / s.clauses();
 
         while (s.isDetermined() == Result.Undetermined) {
-            int variable = s.outermostQuantifierSet().stream().findAny().get();
-            s = new QBFState(s, variable, (new Random()).nextBoolean());
+            s = new QBFState(s, s.outermostVariable(), (new Random()).nextBoolean());
         }
 
         if (s.isDetermined() == Result.True) {

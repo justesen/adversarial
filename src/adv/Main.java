@@ -4,10 +4,7 @@ import adv.algorithms.*;
 import adv.entities.Action;
 import adv.entities.Game;
 import adv.entities.State;
-import adv.qbf.QBFSAT;
-import adv.qbf.QBFState;
-import adv.qbf.QDIMACS;
-import adv.qbf.QDPLL;
+import adv.qbf.*;
 import adv.tictactoe.TTTState;
 import adv.tictactoe.TicTacToe;
 
@@ -39,21 +36,37 @@ public class Main {
 
             playMatch((Game<State, Action>) game, init, mm, uct);
         } else {
-//            QBFState formula = QDIMACS.parse("instances/qbf/4_unsat.qdimacs");
-            QBFState formula1 = QDIMACS.parse("instances/qbf/preliminary2006/Adder2-2-c.qdimacs");
-            QBFState formula2 = QDIMACS.parse("instances/qbf/preliminary2006/Adder2-2-s.qdimacs");
-            QBFState formula3 = QDIMACS.parse("instances/qbf/preliminary2006/adder-2-unsat.qdimacs");
-            QBFState formula4 = QDIMACS.parse("instances/qbf/preliminary2006/adder-2-sat.qdimacs");
-            QDPLL qdpll = new QDPLL();
-            long startTime = System.currentTimeMillis();
-            System.out.printf("QDPLL: %s (explored %s nodes)\n", qdpll.evaluate(formula1), qdpll.nodes);
-            System.out.printf("QDPLL: %s (explored %s nodes)\n", qdpll.evaluate(formula2), qdpll.nodes);
-            System.out.printf("QDPLL: %s (explored %s nodes)\n", qdpll.evaluate(formula3), qdpll.nodes);
-            System.out.printf("QDPLL: %s (explored %s nodes)\n", qdpll.evaluate(formula4), qdpll.nodes);
-            long endTime = System.currentTimeMillis();
+            QBFState formula1 = QDIMACS.parse("instances/qbf/3_sat.qdimacs");
+            QBFState formula2 = QDIMACS.parse("instances/qbf/4_unsat.qdimacs");
+            QBFState formula3 = QDIMACS.parse("instances/qbf/preliminary2006/Adder2-2-c.qdimacs");
+            QBFState formula4 = QDIMACS.parse("instances/qbf/preliminary2006/Adder2-2-s.qdimacs");
+            QBFState formula5 = QDIMACS.parse("instances/qbf/preliminary2006/adder-2-unsat.qdimacs");
+            QBFState formula6 = QDIMACS.parse("instances/qbf/preliminary2006/adder-2-sat.qdimacs");
 
-            System.out.printf("QDPLL explored %s nodes in %s)\n", qdpll.nodes, (endTime - startTime));
-//            System.out.printf("UCT:   %s (explored %s nodes)\n", uctqbf.evaluate(formula), uctqbf.nodes);
+            QDPLL qdpll = new QDPLL();
+            UCTQBF uctqbf = new UCTQBF(Math.sqrt(2), 20000);
+
+            long startTime, endTime;
+
+            startTime = System.currentTimeMillis();
+            System.out.printf("QDPLL:\t%s\t(explored %s nodes)\n", qdpll.evaluate(formula1), qdpll.nodes);
+            System.out.printf("QDPLL:\t%s\t(explored %s nodes)\n", qdpll.evaluate(formula2), qdpll.nodes);
+            System.out.printf("QDPLL:\t%s\t(explored %s nodes)\n", qdpll.evaluate(formula3), qdpll.nodes);
+            System.out.printf("QDPLL:\t%s\t(explored %s nodes)\n", qdpll.evaluate(formula4), qdpll.nodes);
+//            System.out.printf("QDPLL:\t%s\t(explored %s nodes)\n", qdpll.evaluate(formula5), qdpll.nodes);
+            System.out.printf("QDPLL:\t%s\t(explored %s nodes)\n", qdpll.evaluate(formula6), qdpll.nodes);
+            endTime = System.currentTimeMillis();
+            System.out.printf("QDPLL explored %s nodes in %s ms\n\n", qdpll.nodes, (endTime - startTime));
+
+            startTime = System.currentTimeMillis();
+            System.out.printf("UCT:\t%s\t(explored %s nodes)\n", uctqbf.evaluate(formula1), uctqbf.nodes);
+            System.out.printf("UCT:\t%s\t(explored %s nodes)\n", uctqbf.evaluate(formula2), uctqbf.nodes);
+            System.out.printf("UCT:\t%s\t(explored %s nodes)\n", uctqbf.evaluate(formula3), uctqbf.nodes);
+            System.out.printf("UCT:\t%s\t(explored %s nodes)\n", uctqbf.evaluate(formula4), uctqbf.nodes);
+//            System.out.printf("UCT:\t%s\t(explored %s nodes)\n", uctqbf.evaluate(formula5), uctqbf.nodes);
+            System.out.printf("UCT:\t%s\t(explored %s nodes)\n", uctqbf.evaluate(formula6), uctqbf.nodes);
+            endTime = System.currentTimeMillis();
+            System.out.printf("UCT explored %s nodes in %s ms\n\n", uctqbf.nodes, (endTime - startTime));
         }
     }
 

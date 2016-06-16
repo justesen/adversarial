@@ -3,11 +3,13 @@ package adv.qbf;
 public class QDPLL {
     public int nodes;
 
-    public QDPLL() {
-        this.nodes = 0;
+    public boolean evaluate(QBFState s) {
+        nodes = 0;
+
+        return recurse(s);
     }
 
-    public boolean evaluate(QBFState s) {
+    private boolean recurse(QBFState s) {
         nodes++;
 
         s.simplify();
@@ -19,17 +21,17 @@ public class QDPLL {
                 return false;
         }
 
-        int variable = s.outermostQuantifierSet().stream().findAny().get();
+        int variable = s.outermostVariable();
         QBFState t = new QBFState(s, variable, true);
 
-        if (s.isUniversal() && !evaluate(t)) {
+        if (s.isUniversal() && !recurse(t)) {
             return false;
         }
 
-        if (s.isExistential() && evaluate(t)) {
+        if (s.isExistential() && recurse(t)) {
             return true;
         }
 
-        return evaluate(new QBFState(s, variable, false));
+        return recurse(new QBFState(s, variable, false));
     }
 }

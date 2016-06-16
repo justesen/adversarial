@@ -7,37 +7,32 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class QBFState implements State {
-    private LinkedList<QuantifierSet> quantifierSets;
+    private LinkedList<Quantifier> quantifiers;
     private List<Clause> clauses;
     private Map<Integer, Boolean> assignments;
     private Set<Integer> unassignedVariables;
 
-    QBFState(LinkedList<QuantifierSet> quantifierSets, List<Clause> clauses) {
-        this.quantifierSets = quantifierSets;
+    QBFState(LinkedList<Quantifier> quantifiers, List<Clause> clauses) {
+        this.quantifiers = new LinkedList<>(quantifiers);
         this.clauses = clauses;
         this.assignments = new HashMap<>();
         this.unassignedVariables = new HashSet<>();
 
-        for (QuantifierSet q : quantifierSets) {
-            unassignedVariables.addAll(q.variables());
-        }
+        unassignedVariables.addAll(quantifiers.stream()
+                .map(q -> q.variable)
+                .collect(Collectors.toList()));
     }
 
     QBFState(QBFState s, int variable, boolean value) {
-        if (!s.quantifierSets.getFirst().contains(variable)) {
+        if (s.quantifiers.getFirst().variable != variable) {
             throw new IllegalArgumentException("Variable " + variable + " should be in outermost quantifier set");
         }
 
-        this.quantifierSets = new LinkedList<>();
-        this.quantifierSets.addAll(s.quantifierSets.stream()
-                .map(q -> new QuantifierSet(q.isExistential(), q.variables()))
-                .collect(Collectors.toList()));
-
+        this.quantifiers = new LinkedList<>(s.quantifiers);
         this.clauses = new LinkedList<>();
         this.clauses.addAll(s.clauses.stream()
                 .map(Clause::new)
                 .collect(Collectors.toList()));
-
         this.assignments = new HashMap<>(s.assignments);
         this.unassignedVariables = new HashSet<>(s.unassignedVariables);
         assign(variable, value);
@@ -50,21 +45,21 @@ public class QBFState implements State {
     private void assign(int variable, boolean value) {
         assignments.put(variable, value);
         unassignedVariables.remove(variable);
+        Quantifier toBeRemoved = null;
 
-        for (QuantifierSet q : quantifierSets) {
-            if (q.remove(variable)) {
+        for (Quantifier q : quantifiers) {
+            if (q.variable == variable) {
+                toBeRemoved = q;
                 break;
             }
         }
 
-        while (!quantifierSets.isEmpty() && quantifierSets.getFirst().isEmpty()) {
-            quantifierSets.removeFirst();
-        }
+        quantifiers.remove(toBeRemoved);
     }
 
-    private boolean isExistential(int var) {
-        for (QuantifierSet q : quantifierSets) {
-            if (q.contains(var)) {
+    private boolean isExistential(int variable) {
+        for (Quantifier q : quantifiers) {
+            if (q.variable == variable) {
                 return q.isExistential();
             }
         }
@@ -74,11 +69,11 @@ public class QBFState implements State {
     }
 
     boolean isExistential() {
-        return quantifierSets.getFirst().isExistential();
+        return quantifiers.getFirst().isExistential();
     }
 
     boolean isUniversal() {
-        return !quantifierSets.getFirst().isExistential();
+        return !quantifiers.getFirst().isExistential();
     }
 
     Result isDetermined() {
@@ -97,8 +92,8 @@ public class QBFState implements State {
         return allTrue ? Result.True : Result.Undetermined;
     }
 
-    Collection<Integer> outermostQuantifierSet() {
-        return quantifierSets.getFirst().variables();
+    int outermostVariable() {
+        return quantifiers.getFirst().variable;
     }
 
     void simplify() {
@@ -181,12 +176,10 @@ public class QBFState implements State {
     public String toString() {
         StringBuilder s = new StringBuilder();
 
-        for (QuantifierSet q : quantifierSets) {
-            for (int v : q.variables()) {
-                s.append(q.isExistential() ? "\u2203" : "\u2200");
-                s.append(v);
-                s.append(".");
-            }
+        for (Quantifier q : quantifiers) {
+            s.append(q.isExistential() ? "\u2203" : "\u2200");
+            s.append(q.variable);
+            s.append(".");
         }
 
         if (!clauses.isEmpty()) {
