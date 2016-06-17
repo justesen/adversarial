@@ -36,9 +36,9 @@ public class UCTResult {
     @Override
     public String toString() {
         if (value == Result.True) {
-            return "true";
+            return "SAT";
         } else if (value == Result.False) {
-            return "false";
+            return "UNSAT";
         } else {
             return "" + utility;
         }

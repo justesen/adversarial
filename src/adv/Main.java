@@ -37,13 +37,13 @@ public class Main {
             formulas.add(QDIMACS.generate(45, 130, 5));
             formulas.add(QDIMACS.generate(45, 130, 5));
             formulas.add(QDIMACS.generate(45, 130, 5));
-            formulas.add(QDIMACS.parse("instances/qbf/3_sat.qdimacs"));
-            formulas.add(QDIMACS.parse("instances/qbf/4_unsat.qdimacs"));
-            formulas.add(QDIMACS.parse("instances/qbf/5_sat.qdimacs"));
-            formulas.add(QDIMACS.parse("instances/qbf/preliminary2006/Adder2-2-c.qdimacs"));
-            formulas.add(QDIMACS.parse("instances/qbf/preliminary2006/Adder2-2-s.qdimacs"));
+            formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/3_sat.qdimacs"));
+            formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/4_unsat.qdimacs"));
+            formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/5_sat.qdimacs"));
+            formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/preliminary2006/Adder2-2-c.qdimacs"));
+            formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/preliminary2006/Adder2-2-s.qdimacs"));
 //            formulas.add(QDIMACS.parse("instances/qbf/preliminary2006/adder-2-unsat.qdimacs"));
-            formulas.add(QDIMACS.parse("instances/qbf/preliminary2006/adder-2-sat.qdimacs"));
+            formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/preliminary2006/adder-2-sat.qdimacs"));
 //            formulas.add(QDIMACS.parse("instances/qbf/preliminary2006/counter_2.qdimacs"));
 
             QBFAlgorithm qdpll = new QDPLL();
@@ -63,7 +63,7 @@ public class Main {
         result = alg.evaluate(formula);
         endTime = System.currentTimeMillis();
 
-        System.out.printf("%s:\t%s\t(explored %s nodes in %s ms)\n", alg, result, alg.generatedNodes(), (endTime - startTime));
+        System.out.printf("%s\t%s\t%s\n", result, alg.generatedNodes(), (endTime - startTime));
     }
 
     private static void evaluateFormulas(QBFAlgorithm alg, Collection<Formula> formulas) {
