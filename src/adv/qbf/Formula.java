@@ -93,6 +93,10 @@ public class Formula {
         return !quantifiers.getFirst().isExistential();
     }
 
+    boolean isFullyInstantiated() {
+        return quantifiers.isEmpty();
+    }
+
     Result isDetermined() {
         boolean allTrue = true;
 

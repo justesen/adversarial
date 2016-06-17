@@ -11,6 +11,7 @@ import adv.tictactoe.TicTacToe;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 @SuppressWarnings({"UnusedAssignment", "unchecked"})
 public class Main {
@@ -49,9 +50,16 @@ public class Main {
             QBFAlgorithm qdpll = new QDPLL();
             QBFAlgorithm uct = new UCTQBF(0, 5, -1);
 
-            evaluateFormulas(qdpll, formulas);
-            System.out.println();
-            evaluateFormulas(uct, formulas);
+//            evaluateFormulas(qdpll, formulas);
+//            System.out.println();
+//            evaluateFormulas(uct, formulas);
+
+            List<Boolean> assignments = new LinkedList<>();
+            assignments.add(true);
+            assignments.add(false);
+            assignments.add(false);
+            assignments.add(false);
+            SearchTraps.lookForSearchTrap(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/level3trap_sat.qdimacs"), assignments, 3);
         }
     }
 

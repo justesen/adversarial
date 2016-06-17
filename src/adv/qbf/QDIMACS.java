@@ -80,10 +80,7 @@ public class QDIMACS {
             line = in.readLine();
         }
 
-        Formula f = new Formula(quantifiers, clauses);
-        f.simplify();
-
-        return f;
+        return new Formula(quantifiers, clauses);
     }
 
     public static Formula generate(int atomsCount, int clausesCount, int literalsPerClause) {
@@ -108,9 +105,6 @@ public class QDIMACS {
             clauses.add(new Clause(literals));
         }
 
-        Formula f = new Formula(quantifiers, clauses);
-        f.simplify();
-
-        return f;
+        return new Formula(quantifiers, clauses);
     }
 }
