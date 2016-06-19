@@ -33,6 +33,19 @@ public class Main {
         } else if (args.length > 0 && args[0].equals("uct")) {
             QBFAlgorithm uct = new UCTQBF(0, 5, -1);
             evaluateFormula(uct, QDIMACS.parse(args[1]));
+        } else if (args.length > 0 && args[0].equals("searchtraps")) {
+            UCTQBF uct = new UCTQBF(0, 5, -1);
+            int level = Integer.parseInt(args[1]);
+            Formula f = QDIMACS.parse(args[2]);
+            uct.evaluate(f);
+            List<Boolean> assignments = uct.getAssignmentsInOrder();
+            System.out.println(SearchTraps.lookForSearchTrap(f, assignments, level));
+        } else if (args.length > 0 && args[0].equals("graph")) {
+            double c = Double.parseDouble(args[1]);
+            UCTQBF uct = new UCTQBF(c, 5, -1);
+            Formula f = QDIMACS.parse(args[2]);
+            uct.evaluate(f);
+            uct.gameTreeToDot(args[3]);
         } else {
             Collection<Formula> formulas = new LinkedList<>();
             formulas.add(QDIMACS.generate(45, 130, 5));
@@ -47,19 +60,23 @@ public class Main {
             formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/preliminary2006/adder-2-sat.qdimacs"));
 //            formulas.add(QDIMACS.parse("instances/qbf/preliminary2006/counter_2.qdimacs"));
 
-            QBFAlgorithm qdpll = new QDPLL();
-            QBFAlgorithm uct = new UCTQBF(0, 5, -1);
+            QDPLL qdpll = new QDPLL();
+            UCTQBF uct = new UCTQBF(0, 5, -1);
 
 //            evaluateFormulas(qdpll, formulas);
 //            System.out.println();
 //            evaluateFormulas(uct, formulas);
 
-            List<Boolean> assignments = new LinkedList<>();
-            assignments.add(true);
-            assignments.add(false);
-            assignments.add(false);
-            assignments.add(false);
-            SearchTraps.lookForSearchTrap(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/level3trap_sat.qdimacs"), assignments, 3);
+            Formula f = QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/preliminary2006/adder-2-sat.qdimacs");
+            uct.evaluate(f);
+            uct.gameTreeToDot("test0.gv");
+//            List<Boolean> assignments = uct.getAssignmentsInOrder();
+//                    new LinkedList<>();
+//            assignments.add(true);
+//            assignments.add(false);
+//            assignments.add(false);
+//            assignments.add(false);
+//            SearchTraps.lookForSearchTrap(f, assignments, 7);
         }
     }
 

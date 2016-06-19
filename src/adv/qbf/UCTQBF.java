@@ -2,14 +2,15 @@ package adv.qbf;
 
 import adv.util.Timer;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Random;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
+import java.util.*;
 
 public class UCTQBF implements QBFAlgorithm {
     private final double c;
     private final Timer timer;
     private final int numberOfPlayouts;
+    private Node root;
     private int nodes;
 
     public UCTQBF(double c, int numberOfPlayouts, long timeCap) {
@@ -18,8 +19,22 @@ public class UCTQBF implements QBFAlgorithm {
         this.timer = new Timer(timeCap);
     }
 
+    public List<Boolean> getAssignmentsInOrder() {
+        List<Boolean> assignments = new LinkedList<>();
+        Node node;
+        Node child = root;
+
+        while (!child.state.isFullyInstantiated() && child.state.isDetermined() == Result.Undetermined) {
+            node = child;
+            child = selectBestChild(node);
+            assignments.add(child.state.valueOf(node.state.outermostVariable()));
+        }
+
+        return assignments;
+    }
+
     public UCTResult evaluate(Formula s) {
-        Node root = new Node(s);
+        root = new Node(s);
         UCTResult r = null;
         nodes = 0;
 
@@ -36,6 +51,33 @@ public class UCTQBF implements QBFAlgorithm {
     @Override
     public int generatedNodes() {
         return nodes;
+    }
+
+    public void gameTreeToDot(String filename) throws FileNotFoundException {
+        PrintStream out = new PrintStream(filename);
+
+        out.println("strict graph {");
+        gameTreeToDot(out, root);
+        out.println("}");
+    }
+
+    private void gameTreeToDot(PrintStream out, Node node) {
+        if (node.children() != null) {
+            Node left = node.children()[0];
+            Node right = node.children()[1];
+
+            out.println(nodeToString(node) + " -- " + nodeToString(left));
+            out.println(nodeToString(node) + " -- " + nodeToString(right));
+
+            gameTreeToDot(out, left);
+            gameTreeToDot(out, right);
+        }
+    }
+
+    private String nodeToString(Node node) {
+        String[] s = node.toString().split("@");
+
+        return "a" + s[s.length - 1];
     }
 
     @Override
@@ -103,6 +145,20 @@ public class UCTQBF implements QBFAlgorithm {
         } else {
             return Arrays.stream(node.children())
                     .filter(child -> !child.isMarked())
+                    .min(Comparator.comparing(child ->
+                            child.utility() - c * Math.sqrt(Math.log(node.visits()) / child.visits())))
+                    .orElse(null);
+        }
+    }
+
+    private Node selectBestChild(Node node) {
+        if (node.state.isExistential()) {
+            return Arrays.stream(node.children())
+                    .max(Comparator.comparing(child ->
+                            child.utility() + c * Math.sqrt(Math.log(node.visits()) / child.visits())))
+                    .orElse(null);
+        } else {
+            return Arrays.stream(node.children())
                     .min(Comparator.comparing(child ->
                             child.utility() - c * Math.sqrt(Math.log(node.visits()) / child.visits())))
                     .orElse(null);

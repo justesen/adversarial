@@ -3,8 +3,8 @@ package adv.qbf;
 import java.util.List;
 
 public class SearchTraps {
-    public static void lookForSearchTrap(Formula f, List<Boolean> assignments, int level) {
-        System.out.println(f);
+    public static int lookForSearchTrap(Formula f, List<Boolean> assignments, int level) {
+        int searchTrapsCount = 0;
 
         for (boolean a : assignments) {
             Formula g = new Formula(f, a);
@@ -17,18 +17,21 @@ public class SearchTraps {
             if (f.isExistential() != g.isExistential()) {
                 if (f.isExistential() && minimax(g, level) == -1
                         || f.isExistential() && minimax(h, level) == -1
-                        || f.isUniversal() && minimax(h, level) == +1
+                        || f.isUniversal() && minimax(g, level) == +1
                         || f.isUniversal() && minimax(h, level) == +1) {
-                    System.out.printf("Found level %d search trap at %s\n", level, f);
+                    System.err.printf("Found level %d search trap at %s\n", level, f);
+                    searchTrapsCount++;
                 }
             }
 
             f = g;
         }
+
+        return searchTrapsCount;
     }
 
     private static int minimax(Formula f, int level) {
-//        f.simplify();
+        f.simplify();
 
         switch (f.isDetermined()) {
             case True:

@@ -113,8 +113,12 @@ public class Formula {
         return allTrue ? Result.True : Result.Undetermined;
     }
 
-    private int outermostVariable() {
+    int outermostVariable() {
         return quantifiers.getFirst().variable;
+    }
+
+    boolean valueOf(int variable) {
+        return assignments.get(variable);
     }
 
     void simplify() {
