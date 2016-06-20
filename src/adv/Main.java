@@ -30,14 +30,17 @@ public class Main {
         } else if (args.length > 0 && args[0].equals("qdpll")) {
             QBFAlgorithm qdpll = new QDPLL();
             evaluateFormula(qdpll, QDIMACS.parse(args[1]));
+            System.out.println();
         } else if (args.length > 0 && args[0].equals("uct")) {
-            QBFAlgorithm uct = new UCTQBF(0, 5, -1);
-            evaluateFormula(uct, QDIMACS.parse(args[1]));
-        } else if (args.length > 0 && args[0].equals("searchtraps")) {
-            UCTQBF uct = new UCTQBF(0, 5, -1);
-            int level = Integer.parseInt(args[1]);
-            Formula f = QDIMACS.parse(args[2]);
-            uct.evaluate(f);
+            double c = Double.parseDouble(args[1]);
+            int numberOfPlayouts = Integer.parseInt(args[2]);
+            long timeCap = -1;
+            int level = Integer.parseInt(args[3]);
+            UCTQBF uct = new UCTQBF(c, numberOfPlayouts, timeCap);
+            Formula f = QDIMACS.parse(args[4]);
+
+            evaluateFormula(uct, f);
+            System.out.print("\t");
             List<Boolean> assignments = uct.getAssignmentsInOrder();
             System.out.println(SearchTraps.lookForSearchTrap(f, assignments, level));
         } else if (args.length > 0 && args[0].equals("graph")) {
@@ -88,7 +91,7 @@ public class Main {
         result = alg.evaluate(formula);
         endTime = System.currentTimeMillis();
 
-        System.out.printf("%s\t%s\t%s\n", result, alg.generatedNodes(), (endTime - startTime));
+        System.out.printf("%s\t%s\t%s", result, alg.generatedNodes(), (endTime - startTime));
     }
 
     private static void evaluateFormulas(QBFAlgorithm alg, Collection<Formula> formulas) {
