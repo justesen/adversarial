@@ -51,28 +51,28 @@ public class Main {
             uct.gameTreeToDot(args[3]);
         } else {
             Collection<Formula> formulas = new LinkedList<>();
-            formulas.add(QDIMACS.generate(45, 130, 5));
-            formulas.add(QDIMACS.generate(45, 130, 5));
-            formulas.add(QDIMACS.generate(45, 130, 5));
+//            formulas.add(QDIMACS.generate(45, 130, 5));
+//            formulas.add(QDIMACS.generate(45, 130, 5));
+//            formulas.add(QDIMACS.generate(45, 130, 5));
             formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/3_sat.qdimacs"));
             formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/4_unsat.qdimacs"));
             formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/5_sat.qdimacs"));
             formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/preliminary2006/Adder2-2-c.qdimacs"));
             formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/preliminary2006/Adder2-2-s.qdimacs"));
-//            formulas.add(QDIMACS.parse("instances/qbf/preliminary2006/adder-2-unsat.qdimacs"));
+            formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/preliminary2006/adder-2-unsat.qdimacs"));
             formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/preliminary2006/adder-2-sat.qdimacs"));
-//            formulas.add(QDIMACS.parse("instances/qbf/preliminary2006/counter_2.qdimacs"));
+            formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/preliminary2006/counter_2.qdimacs"));
 
             QDPLL qdpll = new QDPLL();
             UCTQBF uct = new UCTQBF(0, 5, -1);
 
-//            evaluateFormulas(qdpll, formulas);
-//            System.out.println();
-//            evaluateFormulas(uct, formulas);
+            evaluateFormulas(qdpll, formulas);
+            System.out.println();
+            evaluateFormulas(uct, formulas);
 
-            Formula f = QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/preliminary2006/adder-2-sat.qdimacs");
-            uct.evaluate(f);
-            uct.gameTreeToDot("test0.gv");
+//            Formula f = QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/preliminary2006/adder-2-sat.qdimacs");
+//            uct.evaluate(f);
+//            uct.gameTreeToDot("test0.gv");
 //            List<Boolean> assignments = uct.getAssignmentsInOrder();
 //                    new LinkedList<>();
 //            assignments.add(true);
@@ -102,6 +102,7 @@ public class Main {
 
         for (Formula f : formulas) {
             evaluateFormula(alg, f);
+            System.out.println();
             nodesTotal += alg.generatedNodes();
         }
 

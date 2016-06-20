@@ -36,12 +36,13 @@ public class QDIMACS {
 
         // Parse quantifier sets
         line = in.readLine();
-        LinkedList<Quantifier> quantifiers = new LinkedList<>();
+        LinkedList<QuantifierSet> quantifierSets = new LinkedList<>();
         boolean[] variables = new boolean[atomsCount + 1];
 
         while (line.charAt(0) == 'e' || line.charAt(0) == 'a') {
             elems = line.split("\\s+");
             boolean isExistential = elems[0].equals("e");
+            QuantifierSet q = new QuantifierSet(isExistential);
 
             for (int i = 1; i < elems.length - 1; i++) {
                 int v = Integer.parseInt(elems[i]);
@@ -52,8 +53,10 @@ public class QDIMACS {
                     throw new IllegalArgumentException(v + " is already quantified");
                 }
 
-                quantifiers.add(new Quantifier(isExistential, v));
+                q.add(v);
             }
+
+            quantifierSets.add(q);
 
             line = in.readLine();
         }
@@ -69,7 +72,16 @@ public class QDIMACS {
                 int v = Integer.parseInt(elems[i]);
 
                 if (!variables[Math.abs(v)]) {
-                    quantifiers.addFirst(new Quantifier(true, Math.abs(v)));
+                    QuantifierSet q;
+
+                    if (quantifierSets.isEmpty() || quantifierSets.getFirst().isUniversal()) {
+                        q = new QuantifierSet(true);
+                        quantifierSets.addFirst(q);
+                    } else {
+                        q = quantifierSets.getFirst();
+                    }
+
+                    q.add(Math.abs(v));
                     variables[Math.abs(v)] = true;
                 }
 
@@ -80,15 +92,17 @@ public class QDIMACS {
             line = in.readLine();
         }
 
-        return new Formula(quantifiers, clauses);
+        return new Formula(quantifierSets, clauses);
     }
 
     public static Formula generate(int atomsCount, int clausesCount, int literalsPerClause) {
-        LinkedList<Quantifier> quantifiers = new LinkedList<>();
+        LinkedList<QuantifierSet> quantifierSets = new LinkedList<>();
         Random rnd = new Random();
 
         for (int var = 1; var <= atomsCount; var++) {
-            quantifiers.add(new Quantifier(rnd.nextBoolean(), var));
+            QuantifierSet q = new QuantifierSet(rnd.nextBoolean());
+            q.add(var);
+            quantifierSets.add(q);
         }
 
         List<Clause> clauses = new LinkedList<>();
@@ -105,6 +119,6 @@ public class QDIMACS {
             clauses.add(new Clause(literals));
         }
 
-        return new Formula(quantifiers, clauses);
+        return new Formula(quantifierSets, clauses);
     }
 }
