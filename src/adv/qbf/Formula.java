@@ -18,19 +18,8 @@ public class Formula {
         this.unassignedVariables = new HashSet<>();
 
         unassignedVariables.addAll(quantifiers.stream()
-                .map(q -> q.variable)
+                .map(Quantifier::variable)
                 .collect(Collectors.toList()));
-    }
-
-    Formula(Formula s, boolean value) {
-        this.quantifiers = new LinkedList<>(s.quantifiers);
-        this.clauses = new LinkedList<>();
-        this.clauses.addAll(s.clauses.stream()
-                .map(Clause::new)
-                .collect(Collectors.toList()));
-        this.assignments = new HashMap<>(s.assignments);
-        this.unassignedVariables = new HashSet<>(s.unassignedVariables);
-        assign(outermostVariable(), value);
     }
 
     Formula(Formula s) {
@@ -41,6 +30,11 @@ public class Formula {
                 .collect(Collectors.toList()));
         this.assignments = new HashMap<>(s.assignments);
         this.unassignedVariables = new HashSet<>(s.unassignedVariables);
+    }
+
+    Formula(Formula s, boolean value) {
+        this(s);
+        assign(outermostVariable(), value);
     }
 
     int trueClausesCount() {
@@ -65,7 +59,7 @@ public class Formula {
         Quantifier toBeRemoved = null;
 
         for (Quantifier q : quantifiers) {
-            if (q.variable == variable) {
+            if (q.variable() == variable) {
                 toBeRemoved = q;
                 break;
             }
@@ -76,7 +70,7 @@ public class Formula {
 
     private boolean isExistential(int variable) {
         for (Quantifier q : quantifiers) {
-            if (q.variable == variable) {
+            if (q.variable() == variable) {
                 return q.isExistential();
             }
         }
@@ -114,7 +108,7 @@ public class Formula {
     }
 
     int outermostVariable() {
-        return quantifiers.getFirst().variable;
+        return quantifiers.getFirst().variable();
     }
 
     boolean valueOf(int variable) {
@@ -203,7 +197,7 @@ public class Formula {
 
         for (Quantifier q : quantifiers) {
             s.append(q.isExistential() ? "\u2203" : "\u2200");
-            s.append(q.variable);
+            s.append(q.variable());
             s.append(".");
         }
 
