@@ -1,21 +1,20 @@
 package adv.qbf;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedList;
 
 class QuantifierSet {
-    private final Set<Integer> variables;
+    private final Collection<Integer> variables;
     private final boolean isExistential;
 
     QuantifierSet(boolean isExistential) {
         this.isExistential = isExistential;
-        this.variables = new HashSet<>();
+        this.variables = new LinkedList<>();
     }
 
     QuantifierSet(boolean isExistential, Collection<Integer> variables) {
         this.isExistential = isExistential;
-        this.variables = new HashSet<>(variables);
+        this.variables = new LinkedList<>(variables);
     }
 
     boolean isExistential() {

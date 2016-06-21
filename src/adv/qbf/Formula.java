@@ -10,12 +10,20 @@ public class Formula {
     private final Map<Integer, Boolean> assignments;
     private final Set<Integer> unassignedVariables;
     private List<Clause> clauses;
+    private Boolean assignedValue;
 
     Formula(LinkedList<QuantifierSet> quantifierSets, List<Clause> clauses) {
-        this.quantifierSets = new LinkedList<>(quantifierSets);
-        this.clauses = clauses;
+        this.quantifierSets = new LinkedList<>();
+        this.quantifierSets.addAll(quantifierSets.stream()
+                .map(q -> new QuantifierSet(q.isExistential(), q.variables()))
+                .collect(Collectors.toList()));
+        this.clauses = new LinkedList<>();
+        this.clauses.addAll(clauses.stream()
+                .map(Clause::new)
+                .collect(Collectors.toList()));
         this.assignments = new HashMap<>();
         this.unassignedVariables = new HashSet<>();
+        this.assignedValue = null;
 
         for (QuantifierSet q : quantifierSets) {
             unassignedVariables.addAll(q.variables());
@@ -33,11 +41,13 @@ public class Formula {
                 .collect(Collectors.toList()));
         this.assignments = new HashMap<>(s.assignments);
         this.unassignedVariables = new HashSet<>(s.unassignedVariables);
+        this.assignedValue = null;
     }
 
     Formula(Formula s, boolean value) {
         this(s);
         int v = chooseVariable(value);
+        this.assignedValue = value;
         assign(v, value);
     }
 
@@ -45,8 +55,12 @@ public class Formula {
         int trueClauses = 0;
 
         for (Clause c : clauses) {
-            if (c.isDetermined(assignments) == Result.True) {
-                trueClauses++;
+            switch (c.isDetermined(assignments)) {
+                case True:
+                    trueClauses++;
+                    break;
+                case False:
+                    return -1;
             }
         }
 
@@ -112,13 +126,24 @@ public class Formula {
     }
 
     private int chooseVariable(boolean value) {
-        return quantifierSets.getFirst().variables().stream().max(Comparator.comparing(v -> {
-            assignments.put(v, value);
-            int trueClausesWhenTrue = trueClausesCount();
-            assignments.remove(v);
+//        return quantifierSets.getFirst().variables().stream().findFirst().orElse(null);
+        if (isExistential()) {
+            return quantifierSets.getFirst().variables().stream().max(Comparator.comparing(v -> {
+                assignments.put(v, value);
+                int satisfiedClauses = trueClausesCount();
+                assignments.remove(v);
 
-            return trueClausesWhenTrue;
-        })).orElse(null);
+                return satisfiedClauses;
+            })).orElse(null);
+        } else {
+            return quantifierSets.getFirst().variables().stream().min(Comparator.comparing(v -> {
+                assignments.put(v, value);
+                int satisfiedClauses = trueClausesCount();
+                assignments.remove(v);
+
+                return satisfiedClauses;
+            })).orElse(null);
+        }
     }
 
     boolean valueOf(int variable) {
@@ -246,5 +271,9 @@ public class Formula {
     @Override
     public int hashCode() {
         return assignments != null ? assignments.hashCode() : 0;
+    }
+
+    boolean assignedValue() {
+        return assignedValue;
     }
 }

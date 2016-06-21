@@ -24,11 +24,11 @@ public class UCTQBF implements QBFAlgorithm {
         Node node;
         Node child = root;
 
-//        while (!child.state.isFullyInstantiated() && child.state.isDetermined() == Result.Undetermined) {
-//            node = child;
-//            child = selectBestChild(node);
-//            assignments.add(child.state.valueOf(node.state.chooseVariable()));
-//        }
+        while (!child.state.isFullyInstantiated() && child.state.isDetermined() == Result.Undetermined) {
+            node = child;
+            child = selectBestChild(node);
+            assignments.add(child.state.assignedValue());
+        }
 
         return assignments;
     }

@@ -54,9 +54,9 @@ public class Main {
 //            formulas.add(QDIMACS.generate(45, 130, 5));
 //            formulas.add(QDIMACS.generate(45, 130, 5));
 //            formulas.add(QDIMACS.generate(45, 130, 5));
-            formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/3_sat.qdimacs"));
-            formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/4_unsat.qdimacs"));
-            formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/5_sat.qdimacs"));
+//            formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/3_sat.qdimacs"));
+//            formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/4_unsat.qdimacs"));
+//            formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/5_sat.qdimacs"));
             formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/preliminary2006/Adder2-2-c.qdimacs"));
             formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/preliminary2006/Adder2-2-s.qdimacs"));
             formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/preliminary2006/adder-2-unsat.qdimacs"));
@@ -70,16 +70,16 @@ public class Main {
             System.out.println();
             evaluateFormulas(uct, formulas);
 
-//            Formula f = QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/preliminary2006/adder-2-sat.qdimacs");
+//            Formula f = QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/level3trap_sat.qdimacs");
 //            uct.evaluate(f);
 //            uct.gameTreeToDot("test0.gv");
-//            List<Boolean> assignments = uct.getAssignmentsInOrder();
+//            List<Boolean> assignments = //uct.getAssignmentsInOrder();
 //                    new LinkedList<>();
 //            assignments.add(true);
 //            assignments.add(false);
 //            assignments.add(false);
 //            assignments.add(false);
-//            SearchTraps.lookForSearchTrap(f, assignments, 7);
+//            SearchTraps.lookForSearchTrap(f, assignments, 1);
         }
     }
 
