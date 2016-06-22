@@ -45,7 +45,8 @@ public class Main {
             System.out.println(SearchTraps.lookForSearchTrap(f, assignments, level));
         } else if (args.length > 0 && args[0].equals("graph")) {
             double c = Double.parseDouble(args[1]);
-            UCTQBF uct = new UCTQBF(c, 5, -1);
+//            UCTQBF uct = new UCTQBF(c, 5, -1);
+            QDPLL uct = new QDPLL();
             Formula f = QDIMACS.parse(args[2]);
             uct.evaluate(f);
             uct.gameTreeToDot(args[3]);
@@ -70,9 +71,9 @@ public class Main {
             System.out.println();
             evaluateFormulas(uct, formulas);
 
-//            Formula f = QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/preliminary2006/adder-2-sat.qdimacs");
-//            uct.evaluate(f);
-//            uct.gameTreeToDot("test0.gv");
+//            Formula f = QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/testsuite/s27_d2_s.qdimacs");
+//            qdpll.evaluate(f);
+//            qdpll.gameTreeToDot("home/mths/git/adversarial/");
 //            List<Boolean> assignments = uct.getAssignmentsInOrder();
 //                    new LinkedList<>();
 //            assignments.add(true);

@@ -57,6 +57,7 @@ public class UCTQBF implements QBFAlgorithm {
         PrintStream out = new PrintStream(filename);
 
         out.println("strict graph {");
+        out.println("root = " + nodeToString(root));
         gameTreeToDot(out, root);
         out.println("}");
     }

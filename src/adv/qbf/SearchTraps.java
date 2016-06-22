@@ -15,10 +15,7 @@ public class SearchTraps {
             }
 
             if (f.isExistential() != g.isExistential()) {
-                if (f.isExistential() && minimax(g, level) == -1
-                        || f.isExistential() && minimax(h, level) == -1
-                        || f.isUniversal() && minimax(g, level) == +1
-                        || f.isUniversal() && minimax(h, level) == +1) {
+                if ((f.isExistential() && (minimax(h, level) == -1)) || (f.isUniversal() && (minimax(h, level) == +1))) {
                     System.err.printf("Found level %d search trap at %s\n", level, f);
                     searchTrapsCount++;
                 }
