@@ -1,5 +1,7 @@
 package adv.qbf;
 
+import adv.qbf.formula.Formula;
+import adv.qbf.formula.PrenexCNF;
 import adv.util.Timer;
 
 import java.io.FileNotFoundException;
@@ -10,7 +12,7 @@ public class UCTQBF implements QBFAlgorithm {
     private final double c;
     private final Timer timer;
     private final int numberOfPlayouts;
-    private Node root;
+    private UCTNode root;
     private int nodes;
 
     public UCTQBF(double c, int numberOfPlayouts, long timeCap) {
@@ -21,8 +23,8 @@ public class UCTQBF implements QBFAlgorithm {
 
     public List<Boolean> getAssignmentsInOrder() {
         List<Boolean> assignments = new LinkedList<>();
-        Node node;
-        Node child = root;
+        UCTNode node;
+        UCTNode child = root;
 
         while (!child.state.isFullyInstantiated() && child.state.isDetermined() == Result.Undetermined) {
             node = child;
@@ -34,7 +36,7 @@ public class UCTQBF implements QBFAlgorithm {
     }
 
     public UCTResult evaluate(Formula s) {
-        root = new Node(s);
+        root = new UCTNode(s);
         UCTResult r = null;
         nodes = 0;
 
@@ -62,10 +64,10 @@ public class UCTQBF implements QBFAlgorithm {
         out.println("}");
     }
 
-    private void gameTreeToDot(PrintStream out, Node node) {
+    private void gameTreeToDot(PrintStream out, UCTNode node) {
         if (node.children() != null) {
-            Node left = node.children()[0];
-            Node right = node.children()[1];
+            UCTNode left = node.children()[0];
+            UCTNode right = node.children()[1];
 
             out.println(nodeToString(node) + " -- " + nodeToString(left));
             out.println(nodeToString(node) + " -- " + nodeToString(right));
@@ -75,7 +77,7 @@ public class UCTQBF implements QBFAlgorithm {
         }
     }
 
-    private String nodeToString(Node node) {
+    private String nodeToString(UCTNode node) {
         String[] s = node.toString().split("@");
 
         return "a" + s[s.length - 1];
@@ -86,7 +88,7 @@ public class UCTQBF implements QBFAlgorithm {
         return "UCTQBF";
     }
 
-    private UCTResult recurse(Node node) {
+    private UCTResult recurse(UCTNode node) {
         UCTResult r = null;
 
         if (node.isUnvisited()) {
@@ -104,7 +106,7 @@ public class UCTQBF implements QBFAlgorithm {
                     r = new UCTResult(estimatedUtility(node.state));
             }
         } else {
-            Node child = selectChild(node);
+            UCTNode child = selectChild(node);
             UCTResult s = recurse(child);
 
             if (node.state.isExistential() && s.isTrue()) {
@@ -136,7 +138,7 @@ public class UCTQBF implements QBFAlgorithm {
         return r;
     }
 
-    private Node selectChild(Node node) {
+    private UCTNode selectChild(UCTNode node) {
         if (node.state.isExistential()) {
             return Arrays.stream(node.children())
                     .filter(child -> !child.isMarked())
@@ -152,7 +154,7 @@ public class UCTQBF implements QBFAlgorithm {
         }
     }
 
-    private Node selectBestChild(Node node) {
+    private UCTNode selectBestChild(UCTNode node) {
         if (node.state.isExistential()) {
             return Arrays.stream(node.children())
                     .max(Comparator.comparing(child ->
@@ -168,20 +170,40 @@ public class UCTQBF implements QBFAlgorithm {
 
     private double estimatedUtility(Formula s) {
         double estimate = 0.0;
-        Formula t;
 
-        for (int i = 0; i < numberOfPlayouts; i++) {
-            t = new Formula(s);
+        if (s instanceof PrenexCNF) {
+            PrenexCNF t;
 
-            while (t.isDetermined() == Result.Undetermined) {
-                t = new Formula(t, (new Random()).nextBoolean());
-                t.simplify();
+            for (int i = 0; i < numberOfPlayouts; i++) {
+                t = new PrenexCNF((PrenexCNF) s);
+
+                while (t.isDetermined() == Result.Undetermined) {
+                    t = new PrenexCNF(t, (new Random()).nextBoolean());
+                    t.simplify();
+                }
+
+                if (t.isDetermined() == Result.True) {
+                    estimate += 1.0;
+                } else {
+                    estimate += (-1.0 + t.trueClausesCount() / t.clausesCount());
+                }
             }
+        } else {
+            PrenexCNF t;
 
-            if (t.isDetermined() == Result.True) {
-                estimate += 1.0;
-            } else {
-                estimate += (-1.0 + t.trueClausesCount() / t.clausesCount());
+            for (int i = 0; i < numberOfPlayouts; i++) {
+                t = new PrenexCNF((PrenexCNF) s);
+
+                while (t.isDetermined() == Result.Undetermined) {
+                    t = new PrenexCNF(t, (new Random()).nextBoolean());
+                    t.simplify();
+                }
+
+                if (t.isDetermined() == Result.True) {
+                    estimate += 1.0;
+                } else {
+                    estimate += (-1.0 + t.trueClausesCount() / t.clausesCount());
+                }
             }
         }
 

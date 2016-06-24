@@ -1,5 +1,5 @@
 package adv.qbf;
 
-enum Result {
+public enum Result {
     True, False, Undetermined
 }

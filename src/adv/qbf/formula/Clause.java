@@ -1,5 +1,6 @@
-package adv.qbf;
+package adv.qbf.formula;
 
+import adv.qbf.Result;
 import adv.util.Pair;
 
 import java.util.LinkedList;
@@ -7,10 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-class Clause {
+public class Clause {
     final List<Integer> literals;
 
-    Clause(List<Integer> literals) {
+    public Clause(List<Integer> literals) {
         this.literals = new LinkedList<>(literals);
     }
 

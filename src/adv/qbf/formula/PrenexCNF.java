@@ -1,17 +1,18 @@
-package adv.qbf;
+package adv.qbf.formula;
 
+import adv.qbf.Result;
 import adv.util.Pair;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Formula {
+public class PrenexCNF implements Formula {
     private final LinkedList<Quantifier> quantifiers;
     private final Map<Integer, Boolean> assignments;
     private final Set<Integer> unassignedVariables;
     private List<Clause> clauses;
 
-    Formula(LinkedList<Quantifier> quantifiers, List<Clause> clauses) {
+    public PrenexCNF(LinkedList<Quantifier> quantifiers, List<Clause> clauses) {
         this.quantifiers = new LinkedList<>(quantifiers);
         this.clauses = clauses;
         this.assignments = new HashMap<>();
@@ -22,7 +23,7 @@ public class Formula {
                 .collect(Collectors.toList()));
     }
 
-    Formula(Formula s) {
+    public PrenexCNF(PrenexCNF s) {
         this.quantifiers = new LinkedList<>(s.quantifiers);
         this.clauses = new LinkedList<>();
         this.clauses.addAll(s.clauses.stream()
@@ -32,12 +33,12 @@ public class Formula {
         this.unassignedVariables = new HashSet<>(s.unassignedVariables);
     }
 
-    Formula(Formula s, boolean value) {
+    public PrenexCNF(PrenexCNF s, boolean value) {
         this(s);
         assign(outermostVariable(), value);
     }
 
-    int trueClausesCount() {
+    public int trueClausesCount() {
         int trueClauses = 0;
 
         for (Clause c : clauses) {
@@ -49,7 +50,7 @@ public class Formula {
         return trueClauses;
     }
 
-    int clausesCount() {
+    public int clausesCount() {
         return clauses.size();
     }
 
@@ -79,19 +80,19 @@ public class Formula {
         return false;
     }
 
-    boolean isExistential() {
+    public boolean isExistential() {
         return quantifiers.getFirst().isExistential();
     }
 
-    boolean isUniversal() {
+    public boolean isUniversal() {
         return !quantifiers.getFirst().isExistential();
     }
 
-    boolean isFullyInstantiated() {
+    public boolean isFullyInstantiated() {
         return quantifiers.isEmpty();
     }
 
-    Result isDetermined() {
+    public Result isDetermined() {
         boolean allTrue = true;
 
         for (Clause c : clauses) {
@@ -107,15 +108,15 @@ public class Formula {
         return allTrue ? Result.True : Result.Undetermined;
     }
 
-    int outermostVariable() {
+    public int outermostVariable() {
         return quantifiers.getFirst().variable();
     }
 
-    boolean valueOf(int variable) {
+    public boolean valueOf(int variable) {
         return assignments.get(variable);
     }
 
-    void simplify() {
+    public void simplify() {
         clauses = clauses.stream()
                 .filter(c -> c.isDetermined(assignments) != Result.True)
                 .collect(Collectors.toList());
@@ -226,7 +227,7 @@ public class Formula {
             return false;
         }
 
-        Formula s = (Formula) o;
+        PrenexCNF s = (PrenexCNF) o;
 
         return assignments != null ? assignments.equals(s.assignments) : s.assignments == null;
     }

@@ -5,6 +5,7 @@ import adv.entities.Action;
 import adv.entities.Game;
 import adv.entities.State;
 import adv.qbf.*;
+import adv.qbf.formula.PrenexCNF;
 import adv.tictactoe.TTTState;
 import adv.tictactoe.TicTacToe;
 
@@ -37,7 +38,7 @@ public class Main {
             long timeCap = -1;
             int level = Integer.parseInt(args[3]);
             UCTQBF uct = new UCTQBF(c, numberOfPlayouts, timeCap);
-            Formula f = QDIMACS.parse(args[4]);
+            PrenexCNF f = QDIMACS.parse(args[4]);
 
             evaluateFormula(uct, f);
             System.out.print("\t");
@@ -47,31 +48,31 @@ public class Main {
             double c = Double.parseDouble(args[1]);
 //            UCTQBF uct = new UCTQBF(c, 5, -1);
             QDPLL uct = new QDPLL();
-            Formula f = QDIMACS.parse(args[2]);
+            PrenexCNF f = QDIMACS.parse(args[2]);
             uct.evaluate(f);
             uct.gameTreeToDot(args[3]);
         } else {
-            Collection<Formula> formulas = new LinkedList<>();
-            formulas.add(QDIMACS.generate(45, 130, 5));
-            formulas.add(QDIMACS.generate(45, 130, 5));
-            formulas.add(QDIMACS.generate(45, 130, 5));
+            Collection<PrenexCNF> formulas = new LinkedList<>();
+//            formulas.add(QDIMACS.generate(45, 130, 5));
+//            formulas.add(QDIMACS.generate(45, 130, 5));
+//            formulas.add(QDIMACS.generate(45, 130, 5));
             formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/3_sat.qdimacs"));
             formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/4_unsat.qdimacs"));
             formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/5_sat.qdimacs"));
-            formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/preliminary2006/Adder2-2-c.qdimacs"));
-            formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/preliminary2006/Adder2-2-s.qdimacs"));
-            formulas.add(QDIMACS.parse("instances/qbf/preliminary2006/adder-2-unsat.qdimacs"));
-            formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/preliminary2006/adder-2-sat.qdimacs"));
-            formulas.add(QDIMACS.parse("instances/qbf/preliminary2006/counter_2.qdimacs"));
+            formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/testsuite/Adder2-2-c.qdimacs"));
+            formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/testsuite/Adder2-2-s.qdimacs"));
+//            formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/testsuite/adder-2-unsat.qdimacs"));
+            formulas.add(QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/testsuite/adder-2-sat.qdimacs"));
+//            formulas.add(QDIMACS.parse("instances/qbf/preliminary2006/counter_2.qdimacs"));
 
-            QDPLL qdpll = new QDPLL();
-            UCTQBF uct = new UCTQBF(0, 5, -1);
+            QBFAlgorithm qdpll = new QDPLL();
+            QBFAlgorithm uct = new UCTQBF(0, 5, -1);
 
             evaluateFormulas(qdpll, formulas);
             System.out.println();
             evaluateFormulas(uct, formulas);
 
-//            Formula f = QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/testsuite/s27_d2_s.qdimacs");
+//            PrenexCNF f = QDIMACS.parse("/home/mths/git/adversarial/instances/qbf/testsuite/s27_d2_s.qdimacs");
 //            qdpll.evaluate(f);
 //            qdpll.gameTreeToDot("home/mths/git/adversarial/");
 //            List<Boolean> assignments = uct.getAssignmentsInOrder();
@@ -84,7 +85,7 @@ public class Main {
         }
     }
 
-    private static void evaluateFormula(QBFAlgorithm alg, Formula formula) {
+    private static void evaluateFormula(QBFAlgorithm alg, PrenexCNF formula) {
         UCTResult result;
         long startTime, endTime;
 
@@ -95,13 +96,13 @@ public class Main {
         System.out.printf("%s\t%s\t%s", result, alg.generatedNodes(), (endTime - startTime));
     }
 
-    private static void evaluateFormulas(QBFAlgorithm alg, Collection<Formula> formulas) {
+    private static void evaluateFormulas(QBFAlgorithm alg, Collection<PrenexCNF> formulas) {
         int nodesTotal = 0;
         long startTime, endTime;
 
         startTime = System.currentTimeMillis();
 
-        for (Formula f : formulas) {
+        for (PrenexCNF f : formulas) {
             evaluateFormula(alg, f);
             System.out.println();
             nodesTotal += alg.generatedNodes();

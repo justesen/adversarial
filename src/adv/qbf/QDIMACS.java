@@ -1,5 +1,9 @@
 package adv.qbf;
 
+import adv.qbf.formula.Clause;
+import adv.qbf.formula.PrenexCNF;
+import adv.qbf.formula.Quantifier;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -8,15 +12,15 @@ import java.util.List;
 import java.util.Random;
 
 public class QDIMACS {
-    public static Formula parse(String path) throws IOException {
+    public static PrenexCNF parse(String path) throws IOException {
         BufferedReader in = new BufferedReader(new FileReader(path));
-        Formula s = parse(in);
+        PrenexCNF s = parse(in);
         in.close();
 
         return s;
     }
 
-    private static Formula parse(BufferedReader in) throws IOException {
+    private static PrenexCNF parse(BufferedReader in) throws IOException {
         String line;
         String[] elems;
 
@@ -80,10 +84,10 @@ public class QDIMACS {
             line = in.readLine();
         }
 
-        return new Formula(quantifiers, clauses);
+        return new PrenexCNF(quantifiers, clauses);
     }
 
-    public static Formula generate(int atomsCount, int clausesCount, int literalsPerClause) {
+    public static PrenexCNF generate(int atomsCount, int clausesCount, int literalsPerClause) {
         LinkedList<Quantifier> quantifiers = new LinkedList<>();
         Random rnd = new Random();
 
@@ -105,6 +109,6 @@ public class QDIMACS {
             clauses.add(new Clause(literals));
         }
 
-        return new Formula(quantifiers, clauses);
+        return new PrenexCNF(quantifiers, clauses);
     }
 }

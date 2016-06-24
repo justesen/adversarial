@@ -1,27 +1,36 @@
 package adv.qbf;
 
-class Node {
+import adv.qbf.formula.Formula;
+import adv.qbf.formula.PrenexCNF;
+
+class UCTNode {
     public final Formula state;
     private int visits;
     private double Q;
-    private Node[] children;
+    private UCTNode[] children;
     private Result mark;
 
-    Node(Formula state) {
+    UCTNode(Formula state) {
         this.state = state;
         this.visits = 0;
         this.Q = 0;
         this.mark = Result.Undetermined;
     }
 
-    Node[] children() {
+    UCTNode[] children() {
         return children;
     }
 
     void addChildren() {
-        children = new Node[2];
-        children[0] = new Node(new Formula(state, true));
-        children[1] = new Node(new Formula(state, false));
+        children = new UCTNode[2];
+
+        if (state instanceof PrenexCNF) {
+            children[0] = new UCTNode(new PrenexCNF((PrenexCNF) state, true));
+            children[1] = new UCTNode(new PrenexCNF((PrenexCNF) state, false));
+        } else {
+            children[0] = new UCTNode(new PrenexCNF((PrenexCNF) state, true));
+            children[1] = new UCTNode(new PrenexCNF((PrenexCNF) state, false));
+        }
     }
 
     void mark(boolean mark) {

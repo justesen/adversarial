@@ -1,14 +1,16 @@
 package adv.qbf;
 
+import adv.qbf.formula.PrenexCNF;
+
 import java.util.List;
 
 public class SearchTraps {
-    public static int lookForSearchTrap(Formula f, List<Boolean> assignments, int level) {
+    public static int lookForSearchTrap(PrenexCNF f, List<Boolean> assignments, int level) {
         int searchTrapsCount = 0;
 
         for (boolean a : assignments) {
-            Formula g = new Formula(f, a);
-            Formula h = new Formula(f, !a);
+            PrenexCNF g = new PrenexCNF(f, a);
+            PrenexCNF h = new PrenexCNF(f, !a);
 
             if (g.isFullyInstantiated()) {
                 break;
@@ -27,7 +29,7 @@ public class SearchTraps {
         return searchTrapsCount;
     }
 
-    private static int minimax(Formula f, int level) {
+    private static int minimax(PrenexCNF f, int level) {
         f.simplify();
 
         switch (f.isDetermined()) {
@@ -41,8 +43,8 @@ public class SearchTraps {
             return 0;
         }
 
-        Formula g = new Formula(f, true);
-        Formula h = new Formula(f, false);
+        PrenexCNF g = new PrenexCNF(f, true);
+        PrenexCNF h = new PrenexCNF(f, false);
 
         if (g.isFullyInstantiated() || f.isExistential() != g.isExistential()) {
             level = level - 1;

@@ -1,10 +1,10 @@
-package adv.qbf;
+package adv.qbf.formula;
 
-class Quantifier {
+public class Quantifier {
     private final int variable;
     private final boolean isExistential;
 
-    Quantifier(boolean isExistential, int variable) {
+    public Quantifier(boolean isExistential, int variable) {
         this.isExistential = isExistential;
         this.variable = variable;
     }
