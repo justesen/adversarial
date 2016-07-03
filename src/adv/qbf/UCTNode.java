@@ -1,5 +1,6 @@
 package adv.qbf;
 
+import adv.qbf.formula.Expression;
 import adv.qbf.formula.Formula;
 import adv.qbf.formula.PrenexCNF;
 
@@ -27,9 +28,9 @@ class UCTNode {
         if (state instanceof PrenexCNF) {
             children[0] = new UCTNode(new PrenexCNF((PrenexCNF) state, true));
             children[1] = new UCTNode(new PrenexCNF((PrenexCNF) state, false));
-        } else {
-            children[0] = new UCTNode(new PrenexCNF((PrenexCNF) state, true));
-            children[1] = new UCTNode(new PrenexCNF((PrenexCNF) state, false));
+        } else if (state instanceof Expression){
+            children[0] = new UCTNode(new Expression((Expression) state, true));
+            children[1] = new UCTNode(new Expression((Expression) state, false));
         }
     }
 

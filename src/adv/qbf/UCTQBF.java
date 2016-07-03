@@ -1,7 +1,6 @@
 package adv.qbf;
 
-import adv.qbf.formula.Formula;
-import adv.qbf.formula.PrenexCNF;
+import adv.qbf.formula.*;
 import adv.util.Timer;
 
 import java.io.FileNotFoundException;
@@ -121,6 +120,11 @@ public class UCTQBF implements QBFAlgorithm {
             } else if (node.state.isUniversal() && node.allChildrenAreTrue()) {
                 node.mark(true);
                 return s;
+            } else if (node.state instanceof Expression){
+                Expression e = (Expression) node.state;
+                Result res = e.eval();
+
+                // TODO: when to simplify formula
             } else {
                 if (s.isTrue()) {
                     r = new UCTResult(+1.0);
