@@ -5,18 +5,19 @@ import adv.entities.Action;
 import adv.entities.Game;
 import adv.entities.State;
 import adv.qbf.*;
+import adv.qbf.formula.Expression;
+import adv.qbf.formula.Formula;
 import adv.qbf.formula.PrenexCNF;
 import adv.tictactoe.TTTState;
 import adv.tictactoe.TicTacToe;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 @SuppressWarnings({"UnusedAssignment", "unchecked"})
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         if (args.length > 0 && args[0].equals("ttt")) {
             Game<? extends State, ? extends Action> game = new TicTacToe();
             State init = new TTTState();
@@ -51,6 +52,26 @@ public class Main {
             PrenexCNF f = QDIMACS.parse(args[2]);
             uct.evaluate(f);
             uct.gameTreeToDot(args[3]);
+        } else if (args.length > 0 && args[0].equals("expr")) {
+            double c = Double.parseDouble(args[1]);
+            int numberOfPlayouts = Integer.parseInt(args[2]);
+            long timeCap = -1;
+            UCTQBF uct = new UCTQBF(c, numberOfPlayouts, timeCap);
+//            Formula f = QBFExpr.parse(args[3]);
+//            Formula f = QBFExpr.parse("/home/mths/git/adversarial/instances/qbf/NPNCNF2008/counter4_2-bin.qbf");
+            Formula f = QBFExpr.parse("/home/mths/git/adversarial/instances/qbf/test.qbf");
+
+            evaluateFormula(uct, f);
+            System.out.println();
+        } else if (args.length > 0 && args[0].equals("convert")) {
+            String from = args[1];
+            String[] path = from.split("\\.qbf");
+            String to = path[0] + ".qdimacs";
+            Expression e = QBFExpr.parse(from);
+            System.out.println("Converting...");
+            PrenexCNF f = QBFExpr.convert(e);
+            System.out.println("Writing...");
+            QDIMACS.toFile(f, to);
         } else {
             Collection<PrenexCNF> formulas = new LinkedList<>();
 //            formulas.add(QDIMACS.generate(45, 130, 5));
@@ -85,7 +106,7 @@ public class Main {
         }
     }
 
-    private static void evaluateFormula(QBFAlgorithm alg, PrenexCNF formula) {
+    private static void evaluateFormula(QBFAlgorithm alg, Formula formula) {
         UCTResult result;
         long startTime, endTime;
 

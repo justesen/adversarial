@@ -4,11 +4,11 @@ import adv.qbf.Result;
 
 import java.util.Map;
 
-public class ExprAnd implements Expr {
-    public final Expr left;
-    public final Expr right;
+public class ExprOr implements Expr {
+    public Expr left;
+    public Expr right;
 
-    public ExprAnd(Expr left, Expr right) {
+    public ExprOr(Expr left, Expr right) {
         this.left = left;
         this.right = right;
     }
@@ -16,8 +16,8 @@ public class ExprAnd implements Expr {
     @Override
     public Result eval(Map<Integer, Boolean> assignments) {
         switch (left.eval(assignments)) {
-            case False:
-                return Result.False;
+            case True:
+                return Result.True;
             case Undetermined:
                 return Result.Undetermined;
         }
@@ -50,12 +50,12 @@ public class ExprAnd implements Expr {
             return r;
         }
 
-        return new ExprAnd(l, r);
+        return new ExprOr(l, r);
     }
 
     @Override
     public Expr pushNegationInwards() {
-        return new ExprAnd(left.pushNegationInwards(), right.pushNegationInwards());
+        return new ExprOr(left.pushNegationInwards(), right.pushNegationInwards());
     }
 
     @Override
@@ -65,25 +65,38 @@ public class ExprAnd implements Expr {
 
         if (l instanceof ExprForAll) {
             ExprForAll f = (ExprForAll) l;
-            return (new ExprExists(f.variable, new ExprAnd(f.expr, r))).extractQuantifiers();
+            return (new ExprExists(f.variable, new ExprOr(f.expr, r))).extractQuantifiers();
         } else if (l instanceof ExprExists) {
             ExprExists f = (ExprExists) l;
-            return (new ExprForAll(f.variable, new ExprAnd(f.expr, r))).extractQuantifiers();
+            return (new ExprForAll(f.variable, new ExprOr(f.expr, r))).extractQuantifiers();
         }
 
         if (r instanceof ExprForAll) {
             ExprForAll f = (ExprForAll) r;
-            return (new ExprExists(f.variable, new ExprAnd(l, f.expr))).extractQuantifiers();
+            return (new ExprExists(f.variable, new ExprOr(l, f.expr))).extractQuantifiers();
         } else if (r instanceof ExprExists) {
             ExprExists f = (ExprExists) r;
-            return (new ExprForAll(f.variable, new ExprAnd(l, f.expr))).extractQuantifiers();
+            return (new ExprForAll(f.variable, new ExprOr(l, f.expr))).extractQuantifiers();
         }
 
-        return new ExprAnd(l, r);
+        return new ExprOr(l, r);
     }
 
     @Override
     public Expr distribute() {
-        return new ExprAnd(left.distribute(), right.distribute());
+        Expr l = left.distribute();
+        Expr r = right.distribute();
+
+        if (l instanceof ExprAnd) {
+            ExprAnd f = (ExprAnd) l;
+            return new ExprAnd((new ExprOr(f.left, r)).distribute(), (new ExprOr(f.right, r)).distribute());
+        }
+
+        if (r instanceof ExprAnd) {
+            ExprAnd f = (ExprAnd) r;
+            return new ExprAnd((new ExprOr(l, f.left)).distribute(), (new ExprOr(l, f.right)).distribute());
+        }
+
+        return new ExprOr(l, r);
     }
 }

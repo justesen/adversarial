@@ -5,13 +5,11 @@ import adv.qbf.Result;
 import java.util.Map;
 
 public class ExprForAll implements Expr {
-    int variable;
-    boolean value;
-    Expr expr;
+    public final int variable;
+    public final Expr expr;
 
-    public ExprForAll(int variable, boolean value, Expr expr) {
+    public ExprForAll(int variable, Expr expr) {
         this.variable = variable;
-        this.value = value;
         this.expr = expr;
     }
 
@@ -23,5 +21,31 @@ public class ExprForAll implements Expr {
     @Override
     public int assign(boolean value) {
         return variable;
+    }
+
+    @Override
+    public Expr simplify(Map<Integer, Boolean> assignments) {
+        Expr e = expr.simplify(assignments);
+
+        if (assignments.containsKey(variable)) {
+            return e;
+        } else {
+            return new ExprForAll(variable, e);
+        }
+    }
+
+    @Override
+    public Expr pushNegationInwards() {
+        return new ExprForAll(variable, expr.pushNegationInwards());
+    }
+
+    @Override
+    public Expr extractQuantifiers() {
+        return new ExprForAll(variable, expr.extractQuantifiers());
+    }
+
+    @Override
+    public Expr distribute() {
+        return new ExprForAll(variable, expr.distribute());
     }
 }

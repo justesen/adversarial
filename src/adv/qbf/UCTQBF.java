@@ -1,6 +1,8 @@
 package adv.qbf;
 
-import adv.qbf.formula.*;
+import adv.qbf.formula.Expression;
+import adv.qbf.formula.Formula;
+import adv.qbf.formula.PrenexCNF;
 import adv.util.Timer;
 
 import java.io.FileNotFoundException;
@@ -120,11 +122,6 @@ public class UCTQBF implements QBFAlgorithm {
             } else if (node.state.isUniversal() && node.allChildrenAreTrue()) {
                 node.mark(true);
                 return s;
-            } else if (node.state instanceof Expression){
-                Expression e = (Expression) node.state;
-                Result res = e.eval();
-
-                // TODO: when to simplify formula
             } else {
                 if (s.isTrue()) {
                     r = new UCTResult(+1.0);
@@ -192,21 +189,21 @@ public class UCTQBF implements QBFAlgorithm {
                     estimate += (-1.0 + t.trueClausesCount() / t.clausesCount());
                 }
             }
-        } else {
-            PrenexCNF t;
+        } else if (s instanceof Expression) {
+            Expression t;
 
             for (int i = 0; i < numberOfPlayouts; i++) {
-                t = new PrenexCNF((PrenexCNF) s);
+                t = new Expression((Expression) s);
 
                 while (t.isDetermined() == Result.Undetermined) {
-                    t = new PrenexCNF(t, (new Random()).nextBoolean());
+                    t = new Expression(t, (new Random()).nextBoolean());
                     t.simplify();
                 }
 
                 if (t.isDetermined() == Result.True) {
                     estimate += 1.0;
                 } else {
-                    estimate += (-1.0 + t.trueClausesCount() / t.clausesCount());
+                    estimate += (-1.0);
                 }
             }
         }

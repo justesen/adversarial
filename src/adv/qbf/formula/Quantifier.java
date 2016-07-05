@@ -9,11 +9,11 @@ public class Quantifier {
         this.variable = variable;
     }
 
-    int variable() {
+    public int variable() {
         return variable;
     }
 
-    boolean isExistential() {
+    public boolean isExistential() {
         return isExistential;
     }
 }

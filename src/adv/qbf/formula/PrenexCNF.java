@@ -7,10 +7,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class PrenexCNF implements Formula {
-    private final LinkedList<Quantifier> quantifiers;
+    public final LinkedList<Quantifier> quantifiers;
     private final Map<Integer, Boolean> assignments;
     private final Set<Integer> unassignedVariables;
-    private List<Clause> clauses;
+    public List<Clause> clauses;
 
     public PrenexCNF(LinkedList<Quantifier> quantifiers, List<Clause> clauses) {
         this.quantifiers = new LinkedList<>(quantifiers);
@@ -235,5 +235,9 @@ public class PrenexCNF implements Formula {
     @Override
     public int hashCode() {
         return assignments != null ? assignments.hashCode() : 0;
+    }
+
+    public int quantifierCount() {
+        return quantifiers.size();
     }
 }

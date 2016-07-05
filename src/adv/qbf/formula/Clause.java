@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Clause {
-    final List<Integer> literals;
+    public final List<Integer> literals;
 
     public Clause(List<Integer> literals) {
         this.literals = new LinkedList<>(literals);

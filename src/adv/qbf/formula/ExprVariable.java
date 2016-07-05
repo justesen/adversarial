@@ -4,18 +4,24 @@ import adv.qbf.Result;
 
 import java.util.Map;
 
-public class ExprExists implements Expr {
+public class ExprVariable implements Expr {
     public final int variable;
-    public final Expr expr;
 
-    public ExprExists(int variable, Expr expr) {
+    public ExprVariable(int variable) {
         this.variable = variable;
-        this.expr = expr;
     }
 
     @Override
     public Result eval(Map<Integer, Boolean> assignments) {
-        return expr.eval(assignments);
+        if (assignments.containsKey(variable)) {
+            if (assignments.get(variable)) {
+                return Result.True;
+            } else {
+                return Result.False;
+            }
+        } else {
+            return Result.Undetermined;
+        }
     }
 
     @Override
@@ -25,27 +31,29 @@ public class ExprExists implements Expr {
 
     @Override
     public Expr simplify(Map<Integer, Boolean> assignments) {
-        Expr e = expr.simplify(assignments);
-
         if (assignments.containsKey(variable)) {
-            return e;
+            if (assignments.get(variable)) {
+                return new ExprTrue();
+            } else {
+                return new ExprFalse();
+            }
         } else {
-            return new ExprExists(variable, e);
+            return this;
         }
     }
 
     @Override
     public Expr pushNegationInwards() {
-        return new ExprExists(variable, expr.pushNegationInwards());
+        return this;
     }
 
     @Override
     public Expr extractQuantifiers() {
-        return new ExprExists(variable, expr.extractQuantifiers());
+        return this;
     }
 
     @Override
     public Expr distribute() {
-        return new ExprExists(variable, expr.distribute());
+        return this;
     }
 }

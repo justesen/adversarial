@@ -1,14 +1,27 @@
 package adv.qbf.formula;
 
 import adv.qbf.Result;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Expression implements Formula {
-    private final Expr expr;
     private final Map<Integer, Boolean> assignments;
     private final boolean fullyInstantiated;
+    public Expr expr;
+
+    public Expression(Expr expr) {
+        this.expr = expr;
+        this.assignments = new HashMap<>();
+        fullyInstantiated = false;
+    }
+
+    public Expression(Expression e) {
+        this.expr = e.expr;
+        this.assignments = new HashMap<>();
+        fullyInstantiated = false;
+    }
 
     public Expression(Expression e, boolean value) {
         this.expr = e.expr;
@@ -35,7 +48,7 @@ public class Expression implements Formula {
 
     @Override
     public int outermostVariable() {
-        return 0;
+        throw new NotImplementedException();
     }
 
     @Override
@@ -45,6 +58,7 @@ public class Expression implements Formula {
 
     @Override
     public void simplify() {
+        expr = expr.simplify(assignments);
     }
 
     @Override
@@ -55,9 +69,5 @@ public class Expression implements Formula {
     @Override
     public boolean isUniversal() {
         return expr instanceof ExprForAll;
-    }
-
-    public Result eval() {
-        return expr.eval(assignments);
     }
 }

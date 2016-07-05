@@ -4,9 +4,7 @@ import adv.qbf.formula.Clause;
 import adv.qbf.formula.PrenexCNF;
 import adv.qbf.formula.Quantifier;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -110,5 +108,44 @@ public class QDIMACS {
         }
 
         return new PrenexCNF(quantifiers, clauses);
+    }
+
+    public static void toFile(PrenexCNF f, String file) throws FileNotFoundException {
+        PrintWriter writer = new PrintWriter(file);
+
+        // Write problem line
+        int clausesCount = f.clausesCount();
+        int atomsCount = f.quantifierCount();
+        writer.printf("p cnf %d %d\n", atomsCount, clausesCount);
+
+        // Write quantifier sets
+        boolean isFirst = true;
+        boolean isLastExistential = false;
+
+        for (Quantifier q : f.quantifiers) {
+            if (isFirst) {
+                writer.printf("%s %d", q.isExistential() ? "e" : "a", q.variable());
+                isFirst = false;
+            } else if ((q.isExistential() && isLastExistential) || (!q.isExistential() && !isLastExistential)) {
+                writer.print(" " + q.variable());
+            } else {
+                writer.println(" 0");
+                writer.printf("%s %d", q.isExistential() ? "e" : "a", q.variable());
+            }
+            isLastExistential = q.isExistential();
+        }
+
+        writer.println(" 0");
+
+        // Write CNF matrix
+        for (Clause c : f.clauses) {
+            for (int l : c.literals) {
+                writer.print(l + " ");
+            }
+
+            writer.println("0");
+        }
+
+        writer.close();
     }
 }
