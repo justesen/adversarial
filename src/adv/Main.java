@@ -5,9 +5,7 @@ import adv.entities.Action;
 import adv.entities.Game;
 import adv.entities.State;
 import adv.qbf.*;
-import adv.qbf.formula.Expression;
-import adv.qbf.formula.Formula;
-import adv.qbf.formula.PrenexCNF;
+import adv.qbf.formula.*;
 import adv.tictactoe.TTTState;
 import adv.tictactoe.TicTacToe;
 
@@ -73,6 +71,9 @@ public class Main {
             System.out.println("Writing...");
             QDIMACS.toFile(f, to);
         } else {
+            Expr e = createDnf(2);
+            Expr f = e.distribute();
+
             Collection<PrenexCNF> formulas = new LinkedList<>();
 //            formulas.add(QDIMACS.generate(45, 130, 5));
 //            formulas.add(QDIMACS.generate(45, 130, 5));
@@ -103,6 +104,14 @@ public class Main {
 //            assignments.add(false);
 //            assignments.add(false);
 //            SearchTraps.lookForSearchTrap(f, assignments, 7);
+        }
+    }
+
+    private static Expr createDnf(int i) {
+        if (i == 1) {
+            return new ExprAnd(new ExprVariable(10), new ExprVariable(11));
+        } else {
+            return new ExprOr(new ExprAnd(new ExprVariable(i * 10), new ExprVariable(i * 10 + 1)), createDnf(i - 1));
         }
     }
 
